@@ -1,7 +1,9 @@
+import Tetris from './components/Tetris'
+
 function App() {
 
   return (
-    <>Tetris look-alike</>
+    <Tetris />
   )
 }
 
