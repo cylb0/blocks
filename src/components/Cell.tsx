@@ -1,4 +1,4 @@
-import { Block, EmptyCell } from "../types"
+import { Block } from "../types"
 
 type Props = {
     content: string
@@ -30,7 +30,7 @@ export default function Cell({ content }: Props) {
         case Block.T    : 
             cellStyle = 'bg-[#9370db]';
             break;
-        case EmptyCell.Empty   : 
+        case Block.E   : 
             cellStyle = 'bg-transparent';
             break;
     }
