@@ -9,6 +9,9 @@ export default function Quit({ quitGame }:Props) {
     }
 
     return (
-        <button onClick={handleClick}>Quit</button>
+        <button 
+            onClick={handleClick}
+            className="bg-primary"
+        >Quit</button>
     )
 }

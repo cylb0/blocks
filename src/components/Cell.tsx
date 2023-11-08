@@ -1,41 +1,25 @@
-import { Block } from "../types"
+import { TETROMINOS } from "../constants/tetrominos";
+import { Block, Empty } from "../types";
 
 type Props = {
-    content: string
+    content: Block | Empty,
+    row: number,
+    index: number
 }
 
-export default function Cell({ content }: Props) {
-
+export default function Cell({ content, row, index }: Props) {
     let cellStyle;
 
-    switch (content) {
-        case Block.I: 
-            cellStyle = 'bg-[#00ffff]';
-            break;
-        case Block.J:
-            cellStyle = 'bg-[#0000ff]'
-            break;
-        case Block.L: 
-            cellStyle = 'bg-[#ffa500]';
-            break;
-        case Block.O:
-            cellStyle = 'bg-[#ffff00]'
-            break;
-        case Block.S: 
-            cellStyle = 'bg-[#00ff00]';
-            break;
-        case Block.Z:
-            cellStyle = 'bg-[#ff0000]'
-            break;
-        case Block.T    : 
-            cellStyle = 'bg-[#9370db]';
-            break;
-        case Block.E   : 
-            cellStyle = 'bg-transparent';
-            break;
+    if (content !== Empty.Empty) {
+        cellStyle = TETROMINOS[content].color
+    } else {
+        cellStyle = "transparent"
     }
 
     return (
-        <div className={`${cellStyle} w-[14px] h-[14px] border box-border`}></div>
+        <div 
+            id={`cell-${row}-${index}`}
+            style={{ background: cellStyle}}
+            className="w-[14px] h-[14px] text-[6px] flex justify-center items-center"></div>
     )
 }

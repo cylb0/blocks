@@ -6,6 +6,11 @@ export enum Block {
     S = 'S',
     Z = 'Z',
     T = 'T',
-    E = 'E'
 }
-export type GridContent = Block[][]
+export enum Empty {
+    Empty = 'E'
+}
+export type CellContent = Block | Empty
+export type GridContent = CellContent[][]
+
+export type Tetromino = { name: string, shape: number[][], color: string }

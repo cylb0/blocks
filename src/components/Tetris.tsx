@@ -1,5 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
+import GameOver from './GameOver'
 import Grid from './Grid'
 import Level from './Level'
 import Lines from './Lines'
@@ -8,15 +9,19 @@ import Quit from './Quit'
 import Score from './Score'
 import Start from './Start'
 
-import { initialGrid } from '../constants/constants'
+import { useGrid, usePlayer } from '../hooks'
+
+import { fakeGrid, initialGrid } from '../constants/constants'
 
 export default function Tetris() {
-    const [start, setStart] = useState(false)
-    const [grid, setGrid] = useState(initialGrid)
-    const [score, setScore] = useState(-1)
-    const [level, setLevel] = useState(-1)
-    const [lines, setLines] = useState(-1)
-    const [next, setNext] = useState('')
+    const player = usePlayer()
+    const [grid, setGrid] = useState(fakeGrid)
+
+    const [start, setStart] = useState(true)
+    const [gameOver, setGameOver] = useState(false)
+    const [score, setScore] = useState(0)
+    const [level, setLevel] = useState(0)
+    const [lines, setLines] = useState(0)
 
     const startGame = () => {
         setStart(true)
@@ -27,26 +32,28 @@ export default function Tetris() {
 
     const quitGame = () => {
         setStart(false)
-        setScore(-1)
-        setLevel(-1)
-        setLines(-1)
-        setNext('')
+        setScore(0)
+        setLevel(0)
+        setLines(0)
     }
 
     return (
-        <div className="flex w-[320px] h-[288px] bg-[#214132]">
+        <div className="flex w-[320px] h-[288px] bg-secondary">
             {!start && 
                 <Start startGame={startGame}/>
             }
             {start && (
                 <>
-                    <Grid currentGrid={grid} />
-                    <aside>
+                    {gameOver ? (
+                        <GameOver />
+                    ) : (
+                        <Grid currentGrid={grid} />
+                    )}
+                    <aside className="w-full flex flex-col items-center justify-around">
                         <Score score={score} />
                         <Level level={level} />
                         <Lines lines={lines} />
-                        <Next next={next} />
-                        <Quit quitGame={quitGame} />
+                        <Next next={player[0].nextTetromino} />
                     </aside>
                 </>
             )}

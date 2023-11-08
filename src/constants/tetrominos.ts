@@ -1,58 +1,75 @@
-export const TETROMINOS = {
+import { Tetromino } from "../types"
+
+export const TETROMINOS:Record<string, Tetromino> = {
     I: {
+        name: "I",
         shape: [
-            ['E', 'I', 'E', 'E'],
-            ['E', 'I', 'E', 'E'],
-            ['E', 'I', 'E', 'E'],
-            ['E', 'I', 'E', 'E']
+            [0, 0, 0, 0],
+            [1, 1, 1, 1],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
         ], 
         color: "#00ffff"
     },
     J: {
+        name: "J",
         shape: [
-            ['J', 'E', 'E'],
-            ['J', 'J', 'J'],
-            ['E', 'E', 'E']
+            [1, 0, 0],
+            [1, 1, 1],
+            [0, 0, 0]
         ],
         color: "#0000ff"
     },
     L: {
+        name: "L",
         shape: [
-            ['E', 'E', 'L'],
-            ['L', 'L', 'L'],
-            ['E', 'E', 'E']
+            [0, 0, 1],
+            [1, 1, 1],
+            [0, 0, 0]
         ],
         color: "#ff7f00"
     },
     O: {
+        name: "O",
         shape: [
-            ['O', 'O'],
-            ['O', 'O']
+            [0, 1, 1, 0],
+            [0, 1, 1, 0],
+            [0, 0, 0, 0],
+            [0, 0, 0, 0]
         ],
         color: "#ffff00"
     },
     S: {
+        name: "S",
         shape: [
-            ['E', 'S', 'S'],
-            ['S', 'S', 'E'],
-            ['E', 'E', 'E']
+            [0, 1, 1],
+            [1, 1, 0],
+            [0, 0, 0]
         ],
         color: "#00ff00"
     },
     Z: {
+        name: "Z",
         shape: [
-            ['Z', 'Z', 'E'],
-            ['E', 'Z', 'Z'],
-            ['E', 'E', 'E']
+            [1, 1, 0],
+            [0, 1, 1],
+            [0, 0, 0]
         ],
         color: "#ff0000"
     },
     T: {
+        name: "T",
         shape: [
-            ['E', 'T', 'E'],
-            ['T', 'T', 'T'],
-            ['E', 'E', 'E']
+            [0, 1, 0],
+            [1, 1, 1],
+            [0, 0, 0]
         ],
         color: "#800080"
     }
+}
+
+export const randomTetromino = () => {
+    const tetroKeys = Object.keys(TETROMINOS)
+    const randomKey = tetroKeys[Math.floor(Math.random() * tetroKeys.length)]
+    return TETROMINOS[randomKey]
 }
