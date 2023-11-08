@@ -5,11 +5,7 @@ export enum Block {
     O = 'O',
     S = 'S',
     Z = 'Z',
-    T = 'T'
+    T = 'T',
+    E = 'E'
 }
-
-export enum EmptyCell {
-    Empty = 'E'
-}
-export type CellContent = Block | EmptyCell
-export type GridContent = CellContent[][]
+export type GridContent = Block[][]

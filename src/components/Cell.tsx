@@ -31,11 +31,11 @@ export default function Cell({ content }: Props) {
             cellStyle = 'bg-[#9370db]';
             break;
         case EmptyCell.Empty   : 
-            cellStyle = 'bg-[#000000]';
+            cellStyle = 'bg-transparent';
             break;
     }
 
     return (
-        <div className={`${cellStyle} w-[20px] h-[20px] border border-slate-400`}></div>
+        <div className={`${cellStyle} w-[14px] h-[14px] border box-border`}></div>
     )
 }
