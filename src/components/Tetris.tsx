@@ -11,17 +11,17 @@ import Start from './Start'
 import { useGrid, usePlayer, useLevel, useTickTimer } from '../hooks'
 
 import { isColliding } from '../helpers/collisionHelper'
+import { initialGrid } from '../constants/constants'
 
 export default function Tetris () {
+    const [start, setStart] = useState(true)
     const [player, updatePlayerPosition, resetPlayer] = usePlayer()
     const [grid, setGrid] = useGrid(player, resetPlayer)
     const [lines, setLines] = useState(0)
-    const [level] = useLevel(lines)
-    const [tick] = useTickTimer(level)
-
-    const [start, setStart] = useState(true)
-    const [gameOver, setGameOver] = useState(false)
     const [score, setScore] = useState(0)
+    const [level] = useLevel(lines)
+    const [tick, setTick] = useTickTimer(level)
+    const [gameOver, setGameOver] = useState(false)
 
     useEffect(() => {
         window.addEventListener('keydown', move)
@@ -32,13 +32,22 @@ export default function Tetris () {
     }, [player])
 
     useEffect(() => {
-
-    }, [])
+        if(!gameOver) {
+            const interval = setInterval(() => {
+                dropPosition()
+            }, tick)
+    
+            return () => clearInterval(interval)
+        }
+    }, [tick, gameOver, player, grid])
 
     const startGame = () => {
+        setGameOver(false)
+        setGrid(initialGrid)
         setStart(true)
-        setLines(1)
-        setScore(1)
+        resetPlayer()
+        setLines(0)
+        setScore(0)
     }
 
     const quitGame = () => {
@@ -58,6 +67,10 @@ export default function Tetris () {
                     dropPosition()
                     break
             }
+        } else {
+            if (e.key === ' ') {
+                startGame()
+            }
         }
     }
 
@@ -71,6 +84,9 @@ export default function Tetris () {
         if(!isColliding(player, grid, {x: 0, y: 1})) {
             updatePlayerPosition({x: 0, y: 1, collides: false})
         } else {
+            if (player.position.y < 1) {
+                setGameOver(true)
+            } 
             updatePlayerPosition({x: 0, y: 0, collides: true})
         }
     }
