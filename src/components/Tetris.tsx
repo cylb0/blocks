@@ -35,14 +35,12 @@ export default function Tetris () {
         }
     }, [player])
 
-    useInterval(() => {
-        dropPosition()
-    }, tick)
+    useInterval(() => dropPosition(), tick, gameOver)
 
     const startGame = () => {
+        setStart(true)
         setGameOver(false)
         setGrid(initialGrid)
-        setStart(true)
         resetPlayer()
         setLines(0)
         setScore(0)
