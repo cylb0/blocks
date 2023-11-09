@@ -8,19 +8,20 @@ import Next from './Next'
 import Score from './Score'
 import Start from './Start'
 
-import { useGrid, usePlayer } from '../hooks'
+import { useGrid, usePlayer, useLevel, useTickTimer } from '../hooks'
 
 import { isColliding } from '../helpers/collisionHelper'
 
 export default function Tetris () {
-    const [player, updatePlayerPosition] = usePlayer()
-    const [grid, setGrid] = useGrid(player)
+    const [player, updatePlayerPosition, resetPlayer] = usePlayer()
+    const [grid, setGrid] = useGrid(player, resetPlayer)
+    const [lines, setLines] = useState(0)
+    const [level] = useLevel(lines)
+    const [tick] = useTickTimer(level)
 
     const [start, setStart] = useState(true)
     const [gameOver, setGameOver] = useState(false)
     const [score, setScore] = useState(0)
-    const [level, setLevel] = useState(0)
-    const [lines, setLines] = useState(0)
 
     useEffect(() => {
         window.addEventListener('keydown', move)
@@ -30,8 +31,14 @@ export default function Tetris () {
         }
     }, [player])
 
+    useEffect(() => {
+
+    }, [])
+
     const startGame = () => {
         setStart(true)
+        setLines(1)
+        setScore(1)
     }
 
     const quitGame = () => {
@@ -56,13 +63,15 @@ export default function Tetris () {
 
     const changePosition = (direction:number) => {
         if(!isColliding(player, grid, {x: direction, y: 0})) {
-            updatePlayerPosition({ x: direction, y: 0 })
+            updatePlayerPosition({ x: direction, y: 0, collides: false })
         }
     }
 
     const dropPosition = () => {
         if(!isColliding(player, grid, {x: 0, y: 1})) {
-            updatePlayerPosition({x: 0, y: 1})
+            updatePlayerPosition({x: 0, y: 1, collides: false})
+        } else {
+            updatePlayerPosition({x: 0, y: 0, collides: true})
         }
     }
 
@@ -83,6 +92,7 @@ export default function Tetris () {
                         <Level level={level} />
                         <Lines lines={lines} />
                         <Next next={player.nextTetromino} />
+                        <p>{tick}</p>
                     </aside>
                 </>
             )}

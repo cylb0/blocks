@@ -22,5 +22,6 @@ export type Player = {
         y: number
     },
     currentTetromino: Tetromino,
-    nextTetromino: Tetromino
+    nextTetromino: Tetromino,
+    collides: boolean
 }

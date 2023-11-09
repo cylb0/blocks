@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
-import { initialGrid, fakeGrid } from '../constants/constants'
+import { initialGrid } from '../constants/constants'
 import { Block, Empty, GridContent, Player } from '../types'
 
-export const useGrid = (player:Player):[GridContent, React.Dispatch<React.SetStateAction<GridContent>>] => {
-    const [grid, setGrid] = useState<GridContent>(fakeGrid)
+export const useGrid = (player:Player, resetPlayer:() => void):[GridContent, React.Dispatch<React.SetStateAction<GridContent>>] => {
+    const [grid, setGrid] = useState<GridContent>(initialGrid)
 
     useEffect(() => {
         const updateGrid = (prevGrid:GridContent):GridContent => {
@@ -16,10 +16,14 @@ export const useGrid = (player:Player):[GridContent, React.Dispatch<React.SetSta
                 row.forEach((cell, cellIndex) => {
                     if (cell === 1) {
                         const blockName = Block[player.currentTetromino.name as keyof typeof Block]
-                        newGrid[rowIndex + player.position.y][cellIndex + player.position.x] = { content: blockName, sticks: false }
+                        newGrid[rowIndex + player.position.y][cellIndex + player.position.x] = { content: blockName, sticks: player.collides ? true : false }
                     }
                 })
             })
+
+            if(player.collides) {
+                resetPlayer()
+            }
 
             return newGrid
         }
