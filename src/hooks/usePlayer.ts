@@ -6,7 +6,7 @@ import { WIDTH } from "../constants/constants"
 export const usePlayer = ():[Player, ({x, y, collides}:{x: number, y:number, collides:boolean}) => void, () => void] => {
 
     const [player, setPlayer] = useState<Player>({
-        position: { x: WIDTH / 2 - 2, y: 16 },
+        position: { x: WIDTH / 2 - 2, y: 0 },
         currentTetromino: randomTetromino(),
         nextTetromino: randomTetromino(),
         collides: false

@@ -4,7 +4,7 @@ export const WIDTH:number = 10;
 
 export const HEIGHT:number = 20;
 
-export const initialGrid:GridContent = Array.from(Array(HEIGHT), () => Array(WIDTH).fill({ content: Empty.Empty, sticks: false }));
+export const initialGrid:GridContent = Array.from(Array(HEIGHT + 2), () => Array(WIDTH).fill({ content: Empty.Empty, sticks: false }));
 
 export const FRAME_RATE = 59.73;
 
