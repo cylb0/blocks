@@ -5,17 +5,16 @@ import Grid from './Grid'
 import Level from './Level'
 import Lines from './Lines'
 import Next from './Next'
-import Quit from './Quit'
 import Score from './Score'
 import Start from './Start'
 
 import { useGrid, usePlayer } from '../hooks'
 
-import { fakeGrid, initialGrid } from '../constants/constants'
+import { isColliding } from '../helpers/collisionHelper'
 
-export default function Tetris() {
-    const player = usePlayer()
-    const [grid, setGrid] = useState(fakeGrid)
+export default function Tetris () {
+    const [player, updatePlayerPosition] = usePlayer()
+    const [grid, setGrid] = useGrid(player)
 
     const [start, setStart] = useState(true)
     const [gameOver, setGameOver] = useState(false)
@@ -23,18 +22,48 @@ export default function Tetris() {
     const [level, setLevel] = useState(0)
     const [lines, setLines] = useState(0)
 
+    useEffect(() => {
+        window.addEventListener('keydown', move)
+        
+        return () => {
+            window.removeEventListener('keydown', move)
+        }
+    }, [player])
+
     const startGame = () => {
         setStart(true)
-        setScore(0)
-        setLevel(1)
-        setLines(0)
     }
 
     const quitGame = () => {
         setStart(false)
-        setScore(0)
-        setLevel(0)
-        setLines(0)
+    }
+
+    const move = (e:KeyboardEvent) => {
+        if (!gameOver) {
+            switch (e.key) {
+                case 'ArrowLeft':
+                    changePosition(-1)
+                    break
+                case 'ArrowRight': 
+                    changePosition(1)
+                    break
+                case 'ArrowDown':
+                    dropPosition()
+                    break
+            }
+        }
+    }
+
+    const changePosition = (direction:number) => {
+        if(!isColliding(player, grid, {x: direction, y: 0})) {
+            updatePlayerPosition({ x: direction, y: 0 })
+        }
+    }
+
+    const dropPosition = () => {
+        if(!isColliding(player, grid, {x: 0, y: 1})) {
+            updatePlayerPosition({x: 0, y: 1})
+        }
     }
 
     return (
@@ -53,7 +82,7 @@ export default function Tetris() {
                         <Score score={score} />
                         <Level level={level} />
                         <Lines lines={lines} />
-                        <Next next={player[0].nextTetromino} />
+                        <Next next={player.nextTetromino} />
                     </aside>
                 </>
             )}

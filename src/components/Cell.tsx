@@ -1,8 +1,8 @@
 import { TETROMINOS } from "../constants/tetrominos";
-import { Block, Empty } from "../types";
+import { Block, CellContent, Empty } from "../types";
 
 type Props = {
-    content: Block | Empty,
+    content: CellContent,
     row: number,
     index: number
 }
@@ -10,8 +10,8 @@ type Props = {
 export default function Cell({ content, row, index }: Props) {
     let cellStyle;
 
-    if (content !== Empty.Empty) {
-        cellStyle = TETROMINOS[content].color
+    if (content.content !== Empty.Empty) {
+        cellStyle = TETROMINOS[content.content].color
     } else {
         cellStyle = "transparent"
     }

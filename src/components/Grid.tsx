@@ -1,6 +1,6 @@
-import { GridContent } from "../types"
+import { Empty, GridContent } from "../types"
 import Cell from "./Cell"
-import { HEIGHT } from "../constants/constants"
+import { HEIGHT, WIDTH } from "../constants/constants"
 
 type Props = {
     currentGrid: GridContent
@@ -12,12 +12,16 @@ export default function Grid({ currentGrid }:Props) {
             <div className="bg-primary h-full flex flex-col-reverse">
                 <div className="inline-block">
                     {currentGrid.map((row, rowIndex) => (
-                        <div id={`row-${HEIGHT - rowIndex - 1}`} key={`row${rowIndex}`} className="flex">
+                        <div 
+                            id={`row-${rowIndex}`} 
+                            key={`row${rowIndex}`} 
+                            className={`flex`}
+                        >
                             {row.map((cell, cellIndex) => (
                                 <Cell 
                                     key={`cell${cellIndex}`}
                                     content={cell}
-                                    row={HEIGHT - rowIndex - 1}
+                                    row={rowIndex}
                                     index={cellIndex} />
                             ))} 
                         </div>     
