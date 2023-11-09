@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { HEIGHT, initialGrid, fakeGrid } from '../constants/constants'
+import { initialGrid, fakeGrid } from '../constants/constants'
 import { Block, Empty, GridContent, Player } from '../types'
 
 export const useGrid = (player:Player):[GridContent, React.Dispatch<React.SetStateAction<GridContent>>] => {

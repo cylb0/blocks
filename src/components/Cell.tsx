@@ -1,5 +1,5 @@
 import { TETROMINOS } from "../constants/tetrominos";
-import { Block, CellContent, Empty } from "../types";
+import { CellContent, Empty } from "../types";
 
 type Props = {
     content: CellContent,
