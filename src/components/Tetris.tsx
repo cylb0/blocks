@@ -12,10 +12,11 @@ import { useGrid, usePlayer, useLevel, useTickTimer } from '../hooks'
 
 import { isColliding } from '../helpers/collisionHelper'
 import { initialGrid } from '../constants/constants'
+import { rotate } from '../helpers/tetrominoHelper'
 
 export default function Tetris () {
     const [start, setStart] = useState(true)
-    const [player, updatePlayerPosition, resetPlayer] = usePlayer()
+    const [player, updatePlayerPosition, resetPlayer, rotatePlayer] = usePlayer()
     const [grid, setGrid] = useGrid(player, resetPlayer)
     const [lines, setLines] = useState(0)
     const [score, setScore] = useState(0)
@@ -66,6 +67,12 @@ export default function Tetris () {
                 case 'ArrowDown':
                     dropPosition()
                     break
+                case 's':
+                    rotateBlock(-1)
+                    break
+                case 'd':
+                    rotateBlock(1)
+                    break
             }
         } else {
             if (e.key === ' ') {
@@ -88,6 +95,14 @@ export default function Tetris () {
                 setGameOver(true)
             } 
             updatePlayerPosition({x: 0, y: 0, collides: true})
+        }
+    }
+
+    const rotateBlock = (direction:number) => {
+        const rotatedPlayer = { ...player }
+        rotatedPlayer.currentTetromino = rotate(rotatedPlayer.currentTetromino, direction)
+        if (!isColliding(rotatedPlayer, grid, { x: 0, y: 0})) {
+            rotatePlayer(direction)
         }
     }
 

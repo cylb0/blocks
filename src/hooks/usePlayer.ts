@@ -2,8 +2,9 @@ import { useEffect, useState } from "react"
 import { randomTetromino } from "../constants/tetrominos"
 import { Player } from "../types"
 import { WIDTH } from "../constants/constants"
+import { rotate } from "../helpers/tetrominoHelper"
 
-export const usePlayer = ():[Player, ({x, y, collides}:{x: number, y:number, collides:boolean}) => void, () => void] => {
+export const usePlayer = ():[Player, ({x, y, collides}:{x: number, y:number, collides:boolean}) => void, () => void, (direction:number) => void] => {
 
     const [player, setPlayer] = useState<Player>({
         position: { x: WIDTH / 2 - 2, y: 0 },
@@ -33,5 +34,12 @@ export const usePlayer = ():[Player, ({x, y, collides}:{x: number, y:number, col
         }))
     }
 
-    return [ player, updatePlayerPosition, resetPlayer ]
+    const rotatePlayer = (direction:number) => {
+        setPlayer(prevState => ({
+            ...prevState,
+            currentTetromino: rotate(prevState.currentTetromino, direction)
+        }))
+    }
+
+    return [ player, updatePlayerPosition, resetPlayer, rotatePlayer ]
 }
