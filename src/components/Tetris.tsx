@@ -13,6 +13,7 @@ import { useGrid, usePlayer, useLevel, useTickTimer } from '../hooks'
 import { isColliding } from '../helpers/collisionHelper'
 import { initialGrid } from '../constants/constants'
 import { rotate } from '../helpers/tetrominoHelper'
+import { useInterval } from '../hooks/useInterval'
 
 export default function Tetris () {
     const [start, setStart] = useState(true)
@@ -24,6 +25,8 @@ export default function Tetris () {
     const [tick, setTick] = useTickTimer(level)
     const [gameOver, setGameOver] = useState(false)
 
+    // const intervalRef = useRef<number | null>(null)
+
     useEffect(() => {
         window.addEventListener('keydown', move)
         
@@ -32,15 +35,9 @@ export default function Tetris () {
         }
     }, [player])
 
-    useEffect(() => {
-        if(!gameOver) {
-            const interval = setInterval(() => {
-                dropPosition()
-            }, tick)
-    
-            return () => clearInterval(interval)
-        }
-    }, [tick, gameOver, player, grid])
+    useInterval(() => {
+        dropPosition()
+    }, tick)
 
     const startGame = () => {
         setGameOver(false)
@@ -56,28 +53,31 @@ export default function Tetris () {
     }
 
     const move = (e:KeyboardEvent) => {
-        if (!gameOver) {
-            switch (e.key) {
-                case 'ArrowLeft':
-                    changePosition(-1)
-                    break
-                case 'ArrowRight': 
-                    changePosition(1)
-                    break
-                case 'ArrowDown':
-                    dropPosition()
-                    break
-                case 's':
-                    rotateBlock(-1)
-                    break
-                case 'd':
-                    rotateBlock(1)
-                    break
-            }
-        } else {
+        if (gameOver) {
             if (e.key === ' ') {
                 startGame()
             }
+            return
+        }
+
+        switch (e.key) {
+            case 'ArrowLeft':
+                changePosition(-1)
+                break
+            case 'ArrowRight': 
+                changePosition(1)
+                break
+            case 'ArrowDown':
+                dropPosition()
+                break
+            case 's':
+                rotateBlock(-1)
+                break
+            case 'd':
+                rotateBlock(1)
+                break
+            default: 
+                break
         }
     }
 

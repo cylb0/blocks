@@ -1,6 +1,5 @@
-import { Empty, GridContent } from "../types"
+import { GridContent } from "../types"
 import Cell from "./Cell"
-import { HEIGHT, WIDTH } from "../constants/constants"
 
 type Props = {
     currentGrid: GridContent

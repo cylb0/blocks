@@ -1,6 +1,10 @@
 import { Tetromino } from "../types"
 
 export const rotate = (tetromino:Tetromino, direction:number):Tetromino => {
+    if (tetromino.name === 'O') {
+        return tetromino
+    }
+
     const shape = tetromino.shape
     const rotatedShape:number[][] = []
 
@@ -19,7 +23,6 @@ export const rotate = (tetromino:Tetromino, direction:number):Tetromino => {
             }
         }
     }
-    
     
     return {
         ...tetromino,
