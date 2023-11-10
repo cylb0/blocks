@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
-import { initialGrid } from '../constants/constants'
+import { WIDTH, initialGrid } from '../constants/constants'
 import { Block, Empty, GridContent, Player } from '../types'
 
-export const useGrid = (player:Player, resetPlayer:() => void):[GridContent, React.Dispatch<React.SetStateAction<GridContent>>] => {
+export const useGrid = (player:Player, resetPlayer:() => void):[GridContent, React.Dispatch<React.SetStateAction<GridContent>>, () => number] => {
     const [grid, setGrid] = useState<GridContent>(initialGrid)
 
     useEffect(() => {
@@ -32,5 +32,26 @@ export const useGrid = (player:Player, resetPlayer:() => void):[GridContent, Rea
 
     }, [player])
 
-    return [grid, setGrid]
+    const checkCompleteRows = ():number => {
+        let lines = 0
+        const toDelete:number[] = []
+        grid.forEach((row, rowIndex) => {
+            if (row.every(cell => (cell.content !== Empty.Empty) && (cell.sticks))) {
+                lines++
+                toDelete.push(rowIndex)
+            }
+        })
+        deleteRows(toDelete)
+        return lines
+    }
+
+    const deleteRows = (toDelete:number[]) => {
+        setGrid((prevState) => {
+            const newEmptyRows = Array(toDelete.length).fill(Array(WIDTH).fill({ content: Empty.Empty, sticks: false }))
+            const newGrid = newEmptyRows.concat(prevState.filter((_, index) => !toDelete.includes(index)))
+            return newGrid
+        })
+    }
+
+    return [grid, setGrid, checkCompleteRows]
 }

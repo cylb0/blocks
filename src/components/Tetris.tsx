@@ -11,21 +11,19 @@ import Start from './Start'
 import { useGrid, usePlayer, useLevel, useTickTimer } from '../hooks'
 
 import { isColliding } from '../helpers/collisionHelper'
-import { initialGrid } from '../constants/constants'
+import { initialGrid, scores } from '../constants/constants'
 import { rotate } from '../helpers/tetrominoHelper'
 import { useInterval } from '../hooks/useInterval'
 
 export default function Tetris () {
     const [start, setStart] = useState(true)
     const [player, updatePlayerPosition, resetPlayer, rotatePlayer] = usePlayer()
-    const [grid, setGrid] = useGrid(player, resetPlayer)
+    const [grid, setGrid, checkCompleteRows] = useGrid(player, resetPlayer)
     const [lines, setLines] = useState(0)
     const [score, setScore] = useState(0)
     const [level] = useLevel(lines)
     const [tick, setTick] = useTickTimer(level)
     const [gameOver, setGameOver] = useState(false)
-
-    // const intervalRef = useRef<number | null>(null)
 
     useEffect(() => {
         window.addEventListener('keydown', move)
@@ -33,7 +31,15 @@ export default function Tetris () {
         return () => {
             window.removeEventListener('keydown', move)
         }
-    }, [player])
+    }, [player.position])
+
+    useEffect(() => {
+        const completeLines = checkCompleteRows()
+        if(completeLines > 0) {
+            setLines(lines + completeLines)
+            setScore(score + scores[completeLines])
+        } 
+    }, [player.position])
 
     useInterval(() => dropPosition(), tick, gameOver)
 
@@ -92,7 +98,7 @@ export default function Tetris () {
             if (player.position.y < 1) {
                 setGameOver(true)
             } 
-            updatePlayerPosition({x: 0, y: 0, collides: true})
+            updatePlayerPosition({x: 0, y: 0, collides: true})        
         }
     }
 
@@ -105,25 +111,28 @@ export default function Tetris () {
     }
 
     return (
-        <div className="flex w-[320px] h-[288px] bg-secondary">
-            {!start && 
-                <Start startGame={startGame}/>
-            }
-            {start && (
-                <>
-                    {gameOver ? (
-                        <GameOver />
-                    ) : (
-                        <Grid currentGrid={grid} />
-                    )}
-                    <aside className="w-full flex flex-col items-center justify-between mt-7 mb-1">
-                        <Score score={score} />
-                        <Level level={level} />
-                        <Lines lines={lines} />
-                        <Next next={player.nextTetromino} />
-                    </aside>
-                </>
-            )}
+        <div className='relative'>
+            <div className="flex w-[320px] h-[288px] bg-primary">
+                {!start && 
+                    <Start startGame={startGame}/>
+                }
+                {start && (
+                    <>
+                        {gameOver ? (
+                            <GameOver />
+                        ) : (
+                            <Grid currentGrid={grid} />
+                        )}
+                        <aside className="w-full flex flex-col items-center justify-between mt-7 mb-1">
+                            <Score score={score} />
+                            <Level level={level} />
+                            <Lines lines={lines} />
+                            <Next next={player.nextTetromino} />
+                        </aside>
+                    </>
+                )}
+            </div>
+            <div className="absolute top-0 left-0 w-full h-full z-20 opacity-30 pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'4\' height=\'4\' fill=\'none\' stroke=\'%23c6cfa2\' stroke-width=\'0.5\'><path d=\'M0 0v10M10 0v10M0 0h10M0 10h10\'/></svg>")' }} />
         </div>
     )
 }

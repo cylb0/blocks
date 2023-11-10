@@ -14,7 +14,7 @@ export default function Grid({ currentGrid }:Props) {
                         <div 
                             id={`row-${rowIndex}`} 
                             key={`row${rowIndex}`} 
-                            className={`flex ${rowIndex < 2 ? 'hidden' : ''}`}
+                            className={`flex`}
                         >
                             {row.map((cell, cellIndex) => (
                                 <Cell 
