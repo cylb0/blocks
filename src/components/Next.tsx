@@ -22,8 +22,8 @@ export default function Next({ next }:Props) {
     const displayGrid = to4x4(next.shape)
 
     return (
-        <div className="bg-primary p-1 rounded">
-            <div className="bg-primary p-1 border-4 border-tertiary rounded">
+        <div className="bg-quaternary p-1 rounded-xl border-2 border-primary self-end me-2">
+            <div className="bg-quaternary p-1 border-2 border-primary rounded-xl">
                 {displayGrid.map((row, rowIndex) => (
                     <div key={rowIndex} className="flex">
                         {row.map((cell, cellIndex) => (

@@ -7,8 +7,8 @@ type Props = {
 
 export default function Grid({ currentGrid }:Props) {
     return (
-        <div className="bg-tertiary h-full min-w-[170px] ms-4 flex justify-center border-x-2 border-primary">
-            <div className="bg-primary h-full flex flex-col-reverse">
+        <div className="bg-tertiary h-full min-w-[170px] ms-4 flex justify-center border-x-2 border-quaternary">
+            <div className="bg-quaternary h-full flex flex-col-reverse">
                 <div className="inline-block">
                     {currentGrid.map((row, rowIndex) => (
                         <div 

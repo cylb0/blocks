@@ -116,12 +116,11 @@ export default function Tetris () {
                     ) : (
                         <Grid currentGrid={grid} />
                     )}
-                    <aside className="w-full flex flex-col items-center justify-around">
+                    <aside className="w-full flex flex-col items-center justify-between mt-7 mb-1">
                         <Score score={score} />
                         <Level level={level} />
                         <Lines lines={lines} />
                         <Next next={player.nextTetromino} />
-                        <p>{tick}</p>
                     </aside>
                 </>
             )}
