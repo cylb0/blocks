@@ -11,7 +11,7 @@ import Start from './Start'
 import { useGrid, usePlayer, useLevel, useTickTimer } from '../hooks'
 
 import { isColliding } from '../helpers/collisionHelper'
-import { initialGrid, scores } from '../constants/constants'
+import { FRAME_RATE, initialGrid, scores, speedUp } from '../constants/constants'
 import { rotate } from '../helpers/tetrominoHelper'
 import { useInterval } from '../hooks/useInterval'
 
@@ -24,6 +24,12 @@ export default function Tetris () {
     const [level] = useLevel(lines)
     const [tick, setTick] = useTickTimer(level)
     const [gameOver, setGameOver] = useState(false)
+
+    useEffect(() => {
+        if (speedUp[level as keyof typeof speedUp]) {
+            setTick(Math.floor((speedUp[level as keyof typeof speedUp] / FRAME_RATE)*1000))
+        }
+    }, [level, tick])
 
     useEffect(() => {
         window.addEventListener('keydown', move)
@@ -114,12 +120,12 @@ export default function Tetris () {
         <div className='relative'>
             <div className="flex w-[320px] h-[288px] bg-primary">
                 {!start && 
-                    <Start startGame={startGame}/>
+                    <Start startGame={startGame} />
                 }
                 {start && (
                     <>
                         {gameOver ? (
-                            <GameOver />
+                            <GameOver startGame={startGame} />
                         ) : (
                             <Grid currentGrid={grid} />
                         )}
@@ -128,6 +134,7 @@ export default function Tetris () {
                             <Level level={level} />
                             <Lines lines={lines} />
                             <Next next={player.nextTetromino} />
+                            <p>{tick}</p>
                         </aside>
                     </>
                 )}
