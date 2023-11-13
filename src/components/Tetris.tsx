@@ -24,6 +24,8 @@ export default function Tetris () {
     const [level] = useLevel(lines)
     const [tick, setTick] = useTickTimer(level)
     const [gameOver, setGameOver] = useState(false)
+    const [dropBonus, setDropBonus] = useState(0)
+    const [downPressed, setDownPressed] = useState(false)
 
     useEffect(() => {
         if (speedUp[level as keyof typeof speedUp]) {
@@ -33,9 +35,11 @@ export default function Tetris () {
 
     useEffect(() => {
         window.addEventListener('keydown', move)
+        window.addEventListener('keyup', resetDropBonus)
         
         return () => {
             window.removeEventListener('keydown', move)
+            window.removeEventListener('keyup', resetDropBonus)
         }
     }, [player.position])
 
@@ -78,6 +82,7 @@ export default function Tetris () {
                 changePosition(1)
                 break
             case 'ArrowDown':
+                setDownPressed(true)
                 dropPosition()
                 break
             case 's':
@@ -91,6 +96,15 @@ export default function Tetris () {
         }
     }
 
+    const resetDropBonus = () => {
+        setDownPressed(false)
+        setDropBonus(0)
+    }
+
+    const incrementDropBonus = () => {
+        setDropBonus(dropBonus < 15 ? dropBonus + 1 : dropBonus)
+    }
+
     const changePosition = (direction:number) => {
         if(!isColliding(player, grid, {x: direction, y: 0})) {
             updatePlayerPosition({ x: direction, y: 0, collides: false })
@@ -99,12 +113,18 @@ export default function Tetris () {
 
     const dropPosition = () => {
         if(!isColliding(player, grid, {x: 0, y: 1})) {
+            if (downPressed) {
+                incrementDropBonus()
+            }
             updatePlayerPosition({x: 0, y: 1, collides: false})
         } else {
             if (player.position.y < 1) {
                 setGameOver(true)
-            } 
-            updatePlayerPosition({x: 0, y: 0, collides: true})        
+            }
+            updatePlayerPosition({x: 0, y: 0, collides: true})
+            setScore(score + dropBonus)
+            resetDropBonus()
+            setDownPressed(false)
         }
     }
 
