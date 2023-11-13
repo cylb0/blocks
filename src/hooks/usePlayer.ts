@@ -12,10 +12,10 @@ export const usePlayer = ():[Player, ({x, y, collides}:{x: number, y:number, col
         nextTetromino: randomTetromino(),
         collides: false
     })
-    
+
     useEffect(() => {
-        console.log('player pos: ', player.position.y, player.position.x)
-    }, [player])
+        console.log(player.position.y, player.position.x)
+    })
 
     const updatePlayerPosition = ({ x, y, collides }: {x: number, y: number, collides: boolean}) => {
         setPlayer(prevState => ({
@@ -25,7 +25,7 @@ export const usePlayer = ():[Player, ({x, y, collides}:{x: number, y:number, col
         }))
     }
 
-    const resetPlayer = () => {
+    const resetPlayer = (): void => {
         setPlayer(prevState => ({
             position: { x: WIDTH / 2 - 2, y: 0 },
             currentTetromino: prevState.nextTetromino,
@@ -34,11 +34,10 @@ export const usePlayer = ():[Player, ({x, y, collides}:{x: number, y:number, col
         }))
     }
 
-    const rotatePlayer = (direction:number) => {
-        setPlayer(prevState => ({
-            ...prevState,
-            currentTetromino: rotate(prevState.currentTetromino, direction)
-        }))
+    const rotatePlayer = (direction:number): void => {
+        const clonedPlayer = structuredClone(player)
+        clonedPlayer.currentTetromino = rotate(clonedPlayer.currentTetromino, direction)
+        setPlayer(clonedPlayer)
     }
 
     return [ player, updatePlayerPosition, resetPlayer, rotatePlayer ]

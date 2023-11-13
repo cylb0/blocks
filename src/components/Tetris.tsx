@@ -111,6 +111,7 @@ export default function Tetris () {
     const rotateBlock = (direction:number) => {
         const rotatedPlayer = { ...player }
         rotatedPlayer.currentTetromino = rotate(rotatedPlayer.currentTetromino, direction)
+
         if (!isColliding(rotatedPlayer, grid, { x: 0, y: 0})) {
             rotatePlayer(direction)
         }
@@ -134,7 +135,6 @@ export default function Tetris () {
                             <Level level={level} />
                             <Lines lines={lines} />
                             <Next next={player.nextTetromino} />
-                            <p>{tick}</p>
                         </aside>
                     </>
                 )}
