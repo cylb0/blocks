@@ -43,7 +43,7 @@ export default function Tetris () {
         const completeLines = checkCompleteRows()
         if(completeLines > 0) {
             setLines(lines + completeLines)
-            setScore(score + scores[completeLines])
+            setScore(score + (level === 0 ? scores[completeLines] : (level + 1) * scores[completeLines]))
         } 
     }, [player.position])
 
