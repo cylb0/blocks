@@ -15,9 +15,11 @@ import { FRAME_RATE, initialGrid, scores, speedUp } from '../constants/constants
 import { rotate } from '../helpers/tetrominoHelper'
 import { useInterval } from '../hooks/useInterval'
 import { useUnitContext } from '../hooks/useUnitContext'
+import Boot from './Boot'
 
 export default function Tetris () {
-    const [start, setStart] = useState(true)
+    const [booted, setBooted] = useState(false)
+    const [start, setStart] = useState(false)
     const [player, updatePlayerPosition, resetPlayer, rotatePlayer] = usePlayer()
     const [grid, setGrid, checkCompleteRows] = useGrid(player, resetPlayer)
     const [lines, setLines] = useState(0)
@@ -28,8 +30,6 @@ export default function Tetris () {
     const [dropBonus, setDropBonus] = useState(0)
     const [downPressed, setDownPressed] = useState(false)
 
-    // const unit = width / 20
-
     const unit = useUnitContext()
 
     useEffect(() => {
@@ -37,6 +37,12 @@ export default function Tetris () {
             setTick(Math.floor((speedUp[level as keyof typeof speedUp] / FRAME_RATE)*1000))
         }
     }, [level, tick])
+
+    useEffect(() => {
+        setTimeout(() => {
+            setBooted(true)
+        }, 3000)
+    }, [booted])
 
     useEffect(() => {
         window.addEventListener('keydown', move)
@@ -72,6 +78,7 @@ export default function Tetris () {
     }
 
     const move = (e:KeyboardEvent) => {
+        e.preventDefault()
         if (gameOver) {
             if (e.key === ' ') {
                 startGame()
@@ -145,7 +152,10 @@ export default function Tetris () {
     return (
         <div className="relative" style={{ width: `${20 * unit}px`, height: `${18 * unit}px` }}>
             <div className={`flex w-full h-full bg-primary`}>
-                {!start && 
+                {!booted &&
+                    <Boot />
+                }
+                {booted && !start && 
                     <Start startGame={startGame} />
                 }
                 {start && (

@@ -282,7 +282,7 @@ export default function GameBoy({ width }:Props) {
             </div>
             <div
                 id="switch"
-                style={{ width: `${unit}px`, height: `${0.5 * unit}px`, top: `${0}px`, left: `${ on ? 5 * unit : 4 * unit}px` }}
+                style={{ width: `${unit}px`, height: `${0.5 * unit}px`, top: `${0}px`, left: `${ on ? 6 * unit : 4 * unit}px` }}
                 className="absolute bg-gray-400 hover:cursor-pointer"
                 onClick={() => {
                     setOn(!on)

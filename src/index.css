@@ -6,3 +6,16 @@
     font-family: 'Press Start 2P';
     font-size: x-small;
 }
+
+.animate-slide {
+    animation: slideDown 2s ease-out;
+}
+
+@keyframes slideDown {
+    0% {
+        transform: translateY(-300%);
+    }   
+    100% {
+        transform: translateY(0);
+    } 
+}
