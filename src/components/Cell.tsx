@@ -1,14 +1,16 @@
 import { TETROMINOS } from "../constants/tetrominos";
 import { CellContent, Empty } from "../types";
+import { useUnitContext } from "../hooks/useUnitContext";
 
 type Props = {
     content: CellContent,
     row: number,
-    index: number,
-    lineHeight: number
+    index: number
 }
 
-export default function Cell({ content, row, index, lineHeight }: Props) {
+export default function Cell({ content, row, index }: Props) {
+    const unit = useUnitContext()
+
     let cellStyle;
 
     if (content.content !== Empty.Empty) {
@@ -20,7 +22,7 @@ export default function Cell({ content, row, index, lineHeight }: Props) {
     return (
         <div 
             id={`cell-${row}-${index}`}
-            style={{ background: cellStyle, width: `${lineHeight}px`, aspectRatio: `1 / 1`}}
+            style={{ background: cellStyle, width: `${0.9 * unit}px`, aspectRatio: `1 / 1`}}
             className={`text-[6px] flex justify-center items-center`}></div>
     )
 }

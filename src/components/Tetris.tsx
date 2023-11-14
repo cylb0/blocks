@@ -14,12 +14,9 @@ import { isColliding } from '../helpers/collisionHelper'
 import { FRAME_RATE, initialGrid, scores, speedUp } from '../constants/constants'
 import { rotate } from '../helpers/tetrominoHelper'
 import { useInterval } from '../hooks/useInterval'
+import { useUnitContext } from '../hooks/useUnitContext'
 
-type Props = {
-    w: number
-}
-
-export default function Tetris ({w}:Props) {
+export default function Tetris () {
     const [start, setStart] = useState(true)
     const [player, updatePlayerPosition, resetPlayer, rotatePlayer] = usePlayer()
     const [grid, setGrid, checkCompleteRows] = useGrid(player, resetPlayer)
@@ -30,6 +27,10 @@ export default function Tetris ({w}:Props) {
     const [gameOver, setGameOver] = useState(false)
     const [dropBonus, setDropBonus] = useState(0)
     const [downPressed, setDownPressed] = useState(false)
+
+    // const unit = width / 20
+
+    const unit = useUnitContext()
 
     useEffect(() => {
         if (speedUp[level as keyof typeof speedUp]) {
@@ -142,7 +143,7 @@ export default function Tetris ({w}:Props) {
     }
 
     return (
-        <div className="relative" style={{ width: `${w}px`, height: `${0.9 * w}px` }}>
+        <div className="relative" style={{ width: `${20 * unit}px`, height: `${18 * unit}px` }}>
             <div className={`flex w-full h-full bg-primary`}>
                 {!start && 
                     <Start startGame={startGame} />
@@ -153,14 +154,14 @@ export default function Tetris ({w}:Props) {
                         {gameOver ? (
                             <GameOver startGame={startGame} />
                         ) : (
-                            <Grid currentGrid={grid} lineHeight={(0.9 * w) / 20} />
+                            <Grid currentGrid={grid} />
                         )}
                         </div>
                         <aside className="w-[40%] flex flex-col items-center justify-between mt-7 mb-1">
                             <Score score={score} />
                             <Level level={level} />
                             <Lines lines={lines} />
-                            <Next next={player.nextTetromino} lineHeight={(0.9 * w) / 20} />
+                            <Next next={player.nextTetromino} />
                         </aside>
                     </>
                 )}

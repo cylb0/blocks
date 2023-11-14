@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import Tetris from "./Tetris"
+import { GameBoyContext } from '../hooks/useUnitContext'
 
 type Props = {
     width: number
@@ -92,7 +93,11 @@ export default function GameBoy({ width }:Props) {
                             className="bg-[#9bbc0f]"
                         >
                             {
-                                on && <Tetris w={20 * unit}/>
+                                on && (
+                                <GameBoyContext.Provider value={unit}>
+                                    <Tetris />
+                                </GameBoyContext.Provider>
+                               )
                             }
                         </div>
                     </div>
@@ -277,7 +282,7 @@ export default function GameBoy({ width }:Props) {
             </div>
             <div
                 id="switch"
-                style={{ width: `${unit}px`, height: `${-0.5 * unit}px`, top: `${0}px`, left: `${ on ? 5 * unit : 4 * unit}px` }}
+                style={{ width: `${unit}px`, height: `${0.5 * unit}px`, top: `${0}px`, left: `${ on ? 5 * unit : 4 * unit}px` }}
                 className="absolute bg-gray-400 hover:cursor-pointer"
                 onClick={() => {
                     setOn(!on)

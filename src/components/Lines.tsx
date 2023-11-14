@@ -1,13 +1,21 @@
+import { useUnitContext } from "../hooks/useUnitContext"
+
 type Props = {
     lines: number
 }
 
-export default function Lines({ lines = 15 }:Props) {
+export default function Lines({ lines }:Props) {
+    const unit = useUnitContext()
+
     return (
-        <div className="bg-quaternary p-1 rounded-xl border-2 border-primary w-[80%]">
-            <div className="bg-quaternary px-1 border-2 border-tertiary rounded-lg">
-                <p className="text-center text-primary text-xs">LINES</p>
-                <p className="text-end me-3">{lines}</p>
+        <div className="bg-quaternary rounded-xl border-2 border-primary w-[80%]">
+            <div className="bg-quaternary border-2 border-tertiary rounded-lg">
+                <p 
+                    style={{ fontSize: `${0.8 * unit}px`}}
+                    className="text-center text-primary">LINES</p>
+                <p
+                    style={{ fontSize: `${1.2 * unit}px`, marginRight: `${unit}px` }} 
+                    className="text-primary text-end">{lines}</p>
             </div>
         </div>
     )
