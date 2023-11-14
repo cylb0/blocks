@@ -14,7 +14,7 @@ import { isColliding } from '../helpers/collisionHelper'
 import { FRAME_RATE, initialGrid, scores, speedUp } from '../constants/constants'
 import { rotate } from '../helpers/tetrominoHelper'
 import { useInterval } from '../hooks/useInterval'
-import { useUnitContext } from '../hooks/useUnitContext'
+import { useUnitContext } from '../contexts/useUnitContext'
 import Boot from './Boot'
 
 export default function Tetris () {

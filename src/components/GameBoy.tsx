@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 import Tetris from "./Tetris"
-import { GameBoyContext } from '../hooks/useUnitContext'
+import { GameBoyContext } from '../contexts/useUnitContext'
 
 type Props = {
     width: number

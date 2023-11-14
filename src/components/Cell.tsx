@@ -1,6 +1,6 @@
 import { TETROMINOS } from "../constants/tetrominos";
 import { CellContent, Empty } from "../types";
-import { useUnitContext } from "../hooks/useUnitContext";
+import { useUnitContext } from "../contexts/useUnitContext";
 
 type Props = {
     content: CellContent,

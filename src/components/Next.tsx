@@ -1,5 +1,5 @@
 import { Tetromino } from "../types"
-import { useUnitContext } from "../hooks/useUnitContext"
+import { useUnitContext } from "../contexts/useUnitContext"
 
 type Props = {
     next: Tetromino
