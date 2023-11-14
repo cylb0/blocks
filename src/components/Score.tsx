@@ -8,7 +8,7 @@ export default function Score({ score = 1318 }:Props) {
             <div className="absolute top-[-30%] left-0 w-full z-10 flex justify-center h-3/5">
                 <div className="bg-quaternary p-1 rounded w-[80%]">
                     <div className="border-2 border-tertiary rounded flex justify-center">
-                        <span className="text-primary tracking-[0.2rem]">SCORE</span>
+                        <span className="text-primary text-sm">SCORE</span>
                     </div>
                 </div>
             </div>

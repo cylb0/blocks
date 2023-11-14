@@ -4,10 +4,11 @@ import { CellContent, Empty } from "../types";
 type Props = {
     content: CellContent,
     row: number,
-    index: number
+    index: number,
+    lineHeight: number
 }
 
-export default function Cell({ content, row, index }: Props) {
+export default function Cell({ content, row, index, lineHeight }: Props) {
     let cellStyle;
 
     if (content.content !== Empty.Empty) {
@@ -19,7 +20,7 @@ export default function Cell({ content, row, index }: Props) {
     return (
         <div 
             id={`cell-${row}-${index}`}
-            style={{ background: cellStyle}}
-            className="w-[14px] h-[14px] text-[6px] flex justify-center items-center"></div>
+            style={{ background: cellStyle, width: `${lineHeight}px`, aspectRatio: `1 / 1`}}
+            className={`text-[6px] flex justify-center items-center`}></div>
     )
 }

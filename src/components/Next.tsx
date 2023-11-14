@@ -2,7 +2,8 @@ import { TETROMINOS } from "../constants/tetrominos"
 import { Tetromino } from "../types"
 
 type Props = {
-    next: Tetromino
+    next: Tetromino,
+    lineHeight: number
 }
 
 const to4x4 = (shape: number[][]) => {
@@ -17,7 +18,7 @@ const to4x4 = (shape: number[][]) => {
     return newGrid
 }
 
-export default function Next({ next }:Props) {
+export default function Next({ next, lineHeight }:Props) {
 
     const displayGrid = to4x4(next.shape)
 
@@ -29,8 +30,8 @@ export default function Next({ next }:Props) {
                         {row.map((cell, cellIndex) => (
                             <div 
                                 key={`${rowIndex}-${cellIndex}`}
-                                style={{ background: cell !== 0 ? next.color : '' }}
-                                className={`h-[14px] w-[14px] text-[8px] flex justify-center items-center`}
+                                style={{ background: cell !== 0 ? next.color : '', width: `${lineHeight}px`, aspectRatio: `1 / 1` }}
+                                className={`text-[8px] flex justify-center items-center`}
                             ></div>
                         ))}
                     </div>

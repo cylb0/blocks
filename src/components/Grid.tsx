@@ -2,14 +2,15 @@ import { GridContent } from "../types"
 import Cell from "./Cell"
 
 type Props = {
-    currentGrid: GridContent
+    currentGrid: GridContent,
+    lineHeight: number
 }
 
-export default function Grid({ currentGrid }:Props) {
+export default function Grid({ currentGrid, lineHeight }:Props) {
     return (
-        <div className="bg-tertiary h-full min-w-[170px] ms-4 flex justify-center border-x-2 border-quaternary">
+        <div id="grid" className={`h-full bg-tertiary ms-4 flex justify-center border-x-2 border-quaternary`}>
             <div className="bg-quaternary h-full flex flex-col-reverse">
-                <div className="inline-block">
+                <div className="inline-block w-full h-full">
                     {currentGrid.map((row, rowIndex) => (
                         <div 
                             id={`row-${rowIndex}`} 
@@ -21,7 +22,8 @@ export default function Grid({ currentGrid }:Props) {
                                     key={`cell${cellIndex}`}
                                     content={cell}
                                     row={rowIndex}
-                                    index={cellIndex} />
+                                    index={cellIndex}
+                                    lineHeight={lineHeight} />
                             ))} 
                         </div>     
                     ))}

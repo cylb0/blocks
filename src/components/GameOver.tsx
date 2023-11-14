@@ -9,7 +9,7 @@ export default function GameOver({ startGame }:Props) {
     }
 
     return (
-        <div className="bg-quaternary flex flex-col justify-around items-center min-w-[170px] h-full ms-4 border-x-2 border-[#89ac28]">
+        <div className="bg-quaternary flex flex-col justify-around items-center h-full ms-4 border-x-2 border-[#89ac28]">
             <div className="border-4 border-primary rounded-xl p-1">
                 <div className="border-2 border-tertiary rounded-lg p-4">
                     <p className="text-primary underline decoration-tertiary">GAME</p>

@@ -15,7 +15,11 @@ import { FRAME_RATE, initialGrid, scores, speedUp } from '../constants/constants
 import { rotate } from '../helpers/tetrominoHelper'
 import { useInterval } from '../hooks/useInterval'
 
-export default function Tetris () {
+type Props = {
+    w: number
+}
+
+export default function Tetris ({w}:Props) {
     const [start, setStart] = useState(true)
     const [player, updatePlayerPosition, resetPlayer, rotatePlayer] = usePlayer()
     const [grid, setGrid, checkCompleteRows] = useGrid(player, resetPlayer)
@@ -138,23 +142,25 @@ export default function Tetris () {
     }
 
     return (
-        <div className='relative'>
-            <div className="flex w-[320px] h-[288px] bg-primary">
+        <div className="relative" style={{ width: `${w}px`, height: `${0.9 * w}px` }}>
+            <div className={`flex w-full h-full bg-primary`}>
                 {!start && 
                     <Start startGame={startGame} />
                 }
                 {start && (
                     <>
+                        <div className="w-[60%] h-full">
                         {gameOver ? (
                             <GameOver startGame={startGame} />
                         ) : (
-                            <Grid currentGrid={grid} />
+                            <Grid currentGrid={grid} lineHeight={(0.9 * w) / 20} />
                         )}
-                        <aside className="w-full flex flex-col items-center justify-between mt-7 mb-1">
+                        </div>
+                        <aside className="w-[40%] flex flex-col items-center justify-between mt-7 mb-1">
                             <Score score={score} />
                             <Level level={level} />
                             <Lines lines={lines} />
-                            <Next next={player.nextTetromino} />
+                            <Next next={player.nextTetromino} lineHeight={(0.9 * w) / 20} />
                         </aside>
                     </>
                 )}
