@@ -13,7 +13,7 @@ type Perspective = {
 }
 
 export default function GameBoy({ width }:Props) {
-    const [on, setOn] = useState(true)
+    const [on, setOn] = useState(false)
     const [a, setA] = useState(false)
     const [b, setB] = useState(false)
     const [select, setSelect] = useState(false)
@@ -119,7 +119,7 @@ export default function GameBoy({ width }:Props) {
                             left: `${2.5 * unit}px`,
                             top: `${36 * unit}px`, 
                             transform: `perspective(${5 * unit}px) rotateX(${perspective.y * 2}deg) rotateY(${perspective.x * 2}deg)`}}
-                        className="absolute flex flex-col justify-center items-center"
+                        className="absolute flex flex-col justify-center items-center hover:cursor-pointer"
                     >
                         <div 
                             className="flex justify-center h-1/3"
@@ -144,9 +144,10 @@ export default function GameBoy({ width }:Props) {
                             </div>
                             <div
                                 id="center"
-                                style={{ width: `${3 * unit}px` }}
-                                className="bg-gray-900"
+                                style={{ width: `${3 * unit}px`, fontSize: `${2 * unit}px` }}
+                                className="bg-gray-900 text-gray-800 flex justify-center items-center"
                             >
+                                &#9711;
                             </div>
                             <div
                                 id="rightArrow"
