@@ -4,7 +4,8 @@ import Tetris from './components/Tetris'
 function App() {
 
   return (
-    <Tetris w={250} />
+    // <Tetris w={250} />
+    <GameBoy width={360} />
   )
 }
 
