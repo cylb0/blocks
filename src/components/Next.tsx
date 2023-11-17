@@ -1,20 +1,9 @@
 import { Tetromino } from "../types"
 import { useUnitContext } from "../contexts/useUnitContext"
+import { to4x4 } from "../helpers/tetrominoHelper"
 
 type Props = {
     next: Tetromino
-}
-
-const to4x4 = (shape: number[][]) => {
-    const newGrid = Array.from({ length: 4}, () => Array(4).fill(0))
-
-    shape.forEach((row, rowIndex) => {
-        row.forEach((cell, cellIndex) => {
-            newGrid[rowIndex + (shape.length === 3 ? 1 : 0)][cellIndex] = cell
-        })
-    })
-
-    return newGrid
 }
 
 export default function Next({ next }:Props) {
