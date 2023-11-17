@@ -17,6 +17,7 @@ import { useInterval } from '../hooks/useInterval'
 import { useUnitContext } from '../contexts/useUnitContext'
 import Boot from './Boot'
 import { useButtonsContext } from '../contexts/useButtonsContext'
+import Pause from './Pause'
 
 export default function Tetris () {
 
@@ -27,6 +28,8 @@ export default function Tetris () {
     const [start, setStart] = useState(true)
     const [player, updatePlayerPosition, resetPlayer, rotatePlayer] = usePlayer()
     const [grid, setGrid, checkCompleteRows] = useGrid(player, resetPlayer)
+    const [paused, setPaused] = useState<boolean>(false)
+
     const [lines, setLines] = useState(0)
     const [score, setScore] = useState(0)
     const [level] = useLevel(lines)
@@ -54,22 +57,21 @@ export default function Tetris () {
         const handleKeyUp = () => {
             resetDropBonus()
             resetButtons()
-            keyPressed.current = false
+            resetKeyPressed()
         }
 
         const handleKeyDown = (e:KeyboardEvent) => {
             e.preventDefault()
 
-            if (gameOver) {
-                if (e.key === ' ') {
-                    startGame()
-                }
-                return
-            }
-
             if (!keyPressed.current) {
                 keyPressed.current = true
                 switch (e.key) {
+                    case ' ':
+                        handleButtonPressed('start')
+                        break
+                    case 'Control': 
+                        handleButtonPressed('select')
+                        break
                     case 'ArrowUp': 
                         handleButtonPressed('arrowUp')
                         break
@@ -111,15 +113,20 @@ export default function Tetris () {
         } 
     }, [player.position])
 
-    useInterval(() => dropPosition(), tick, gameOver)
+    useInterval(() => dropPosition(), tick, gameOver, paused)
 
     const startGame = () => {
         setStart(true)
         setGameOver(false)
+        setPaused(false)
         setGrid(initialGrid)
         resetPlayer()
         setLines(0)
         setScore(0)
+    }
+
+    const togglePause = () => {
+        setPaused(prevState => !prevState)
     }
 
     const quitGame = () => {
@@ -128,36 +135,63 @@ export default function Tetris () {
 
     useEffect(() => {
         if (buttons.a) {
-            rotateBlock(1)
+            if (gameOver) {
+                startGame()
+            }
+            if (paused) {
+                togglePause()
+            }
+            if (!gameOver && !paused) {
+                rotateBlock(1)
+            }
         }
         if (buttons.b) {
-            rotateBlock(-1)
+            if (!gameOver && !paused) {
+                rotateBlock(-1)
+            }
         }
         if (buttons.arrowDown) {
             keyPressed.current = false
             dPad(0, -1)
-            setDownPressed(true)
-            dropPosition()
+            if (!gameOver && !paused) {
+                setDownPressed(true)
+                dropPosition()
+            }
         }
         if (buttons.arrowLeft) {
             keyPressed.current = false
             dPad(-1, 0)
-            changePosition(-1)
+            if (!gameOver && !paused) {
+                changePosition(-1)
+            }
         }
         if (buttons.arrowRight) {
             keyPressed.current = false
             dPad(1, 0)
-            changePosition(1)
+            if (!gameOver && !paused) {
+                changePosition(1)
+            }
         }
         if (buttons.arrowUp) {
             keyPressed.current = false
             dPad(0, 1)
+        }
+        if (buttons.start) {
+            if (gameOver) {
+                startGame()
+            } else {
+                togglePause()
+            }
         }
     }, [buttons])
 
     const resetDropBonus = () => {
         setDownPressed(false)
         setDropBonus(0)
+    }
+
+    const resetKeyPressed = () => {
+        keyPressed.current = false
     }
 
     const incrementDropBonus = () => {
@@ -211,6 +245,8 @@ export default function Tetris () {
                         <div className="w-[60%] h-full">
                         {gameOver ? (
                             <GameOver startGame={startGame} />
+                        ) : paused ? (
+                            <Pause />
                         ) : (
                             <Grid currentGrid={grid} />
                         )}

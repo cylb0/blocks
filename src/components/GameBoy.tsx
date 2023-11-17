@@ -294,11 +294,15 @@ export default function GameBoy({ width }:Props) {
                         <button
                             id="select"
                             style={{ width: `${4 * unit}px`, height: `${unit}px` }}
-                            className={`rounded bg-gray-500 border-2 border-gray-600 border-opacity-50 box-border ${select ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
-                            onMouseDown={() => setSelect(true)}
-                            onMouseUp={() => setSelect(false)}
-                            onMouseLeave={() => {
-                                if (select) setSelect(false)
+                            className={`rounded bg-gray-500 border-2 border-gray-600 border-opacity-50 box-border ${buttons.select ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
+                            onMouseDown={() => {
+                                handleButtonPressed('select')
+                            }}
+                            onMouseUp={() => {
+                                resetButtons()
+                            }}
+                            onMouseOut={() => {
+                                resetButtons()
                             }}
                         />
                         <div 
@@ -317,11 +321,15 @@ export default function GameBoy({ width }:Props) {
                         <button
                             id="start"
                             style={{ width: `${4 * unit}px`, height: `${unit}px` }}
-                            className={`rounded bg-gray-500 border-2 border-gray-600 border-opacity-50 box-border ${start ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
-                            onMouseDown={() => setStart(true)}
-                            onMouseUp={() => setStart(false)}
-                            onMouseLeave={() => {
-                                if (start) setStart(false)
+                            className={`rounded bg-gray-500 border-2 border-gray-600 border-opacity-50 box-border ${buttons.start ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
+                            onMouseDown={() => {
+                                handleButtonPressed('start')
+                            }}
+                            onMouseUp={() => {
+                                resetButtons()
+                            }}
+                            onMouseOut={() => {
+                                resetButtons()
                             }}
                         />
                         <div 
