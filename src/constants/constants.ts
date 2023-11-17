@@ -1,4 +1,4 @@
-import { Block, GridContent, Empty } from "../types";Block.I
+import { GridContent, Empty } from "../types";
 
 export const WIDTH:number = 10;
 

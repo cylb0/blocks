@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import GameOver from './GameOver'
 import Grid from './Grid'
@@ -16,10 +16,15 @@ import { rotate } from '../helpers/tetrominoHelper'
 import { useInterval } from '../hooks/useInterval'
 import { useUnitContext } from '../contexts/useUnitContext'
 import Boot from './Boot'
+import { useButtonsContext } from '../contexts/useButtonsContext'
 
 export default function Tetris () {
-    const [booted, setBooted] = useState(false)
-    const [start, setStart] = useState(false)
+
+    const { buttons, handleButtonPressed, resetButtons, dPad } = useButtonsContext()
+    const keyPressed = useRef(false)
+
+    const [booted, setBooted] = useState(true)
+    const [start, setStart] = useState(true)
     const [player, updatePlayerPosition, resetPlayer, rotatePlayer] = usePlayer()
     const [grid, setGrid, checkCompleteRows] = useGrid(player, resetPlayer)
     const [lines, setLines] = useState(0)
@@ -45,14 +50,58 @@ export default function Tetris () {
     }, [booted])
 
     useEffect(() => {
-        window.addEventListener('keydown', move)
-        window.addEventListener('keyup', resetDropBonus)
+
+        const handleKeyUp = () => {
+            resetDropBonus()
+            resetButtons()
+            keyPressed.current = false
+        }
+
+        const handleKeyDown = (e:KeyboardEvent) => {
+            e.preventDefault()
+
+            if (gameOver) {
+                if (e.key === ' ') {
+                    startGame()
+                }
+                return
+            }
+
+            if (!keyPressed.current) {
+                keyPressed.current = true
+                switch (e.key) {
+                    case 'ArrowUp': 
+                        handleButtonPressed('arrowUp')
+                        break
+                    case 'ArrowLeft':
+                        handleButtonPressed('arrowLeft')
+                        break
+                    case 'ArrowRight': 
+                        handleButtonPressed('arrowRight')
+                        break
+                    case 'ArrowDown':
+                        handleButtonPressed('arrowDown')
+                        break
+                    case 's':
+                        handleButtonPressed('b')
+                        break
+                    case 'd':
+                        handleButtonPressed('a')
+                        break
+                    default: 
+                        break
+                }
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown)
+        window.addEventListener('keyup', handleKeyUp)
         
         return () => {
-            window.removeEventListener('keydown', move)
-            window.removeEventListener('keyup', resetDropBonus)
+            window.removeEventListener('keydown', handleKeyDown)
+            window.removeEventListener('keyup', handleKeyUp)
         }
-    }, [player.position])
+    }, [player.position, gameOver])
 
     useEffect(() => {
         const completeLines = checkCompleteRows()
@@ -77,36 +126,34 @@ export default function Tetris () {
         setStart(false)
     }
 
-    const move = (e:KeyboardEvent) => {
-        e.preventDefault()
-        if (gameOver) {
-            if (e.key === ' ') {
-                startGame()
-            }
-            return
+    useEffect(() => {
+        if (buttons.a) {
+            rotateBlock(1)
         }
-
-        switch (e.key) {
-            case 'ArrowLeft':
-                changePosition(-1)
-                break
-            case 'ArrowRight': 
-                changePosition(1)
-                break
-            case 'ArrowDown':
-                setDownPressed(true)
-                dropPosition()
-                break
-            case 's':
-                rotateBlock(-1)
-                break
-            case 'd':
-                rotateBlock(1)
-                break
-            default: 
-                break
+        if (buttons.b) {
+            rotateBlock(-1)
         }
-    }
+        if (buttons.arrowDown) {
+            keyPressed.current = false
+            dPad(0, -1)
+            setDownPressed(true)
+            dropPosition()
+        }
+        if (buttons.arrowLeft) {
+            keyPressed.current = false
+            dPad(-1, 0)
+            changePosition(-1)
+        }
+        if (buttons.arrowRight) {
+            keyPressed.current = false
+            dPad(1, 0)
+            changePosition(1)
+        }
+        if (buttons.arrowUp) {
+            keyPressed.current = false
+            dPad(0, 1)
+        }
+    }, [buttons])
 
     const resetDropBonus = () => {
         setDownPressed(false)
@@ -133,6 +180,7 @@ export default function Tetris () {
             if (player.position.y < 1) {
                 setGameOver(true)
             }
+            keyPressed.current = true
             updatePlayerPosition({x: 0, y: 0, collides: true})
             setScore(score + dropBonus)
             resetDropBonus()

@@ -15,7 +15,6 @@ export type GridContent = CellContent[][]
 
 export type Tetromino = { name: string, shape: number[][], color: string }
 
-
 export type Player = {
     position: {
         x: number,
@@ -24,4 +23,15 @@ export type Player = {
     currentTetromino: Tetromino,
     nextTetromino: Tetromino,
     collides: boolean
+}
+
+export type ButtonsContextType = {
+    a: boolean,
+    b: boolean,
+    arrowUp: boolean,
+    arrowRight: boolean,
+    arrowDown: boolean,
+    arrowLeft: boolean,
+    select: boolean,
+    start: boolean
 }

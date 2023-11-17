@@ -1,7 +1,9 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import Tetris from "./Tetris"
 import { GameBoyContext } from '../contexts/useUnitContext'
+import { ButtonsContext } from '../contexts/useButtonsContext'
+import { ButtonsContextType } from '../types'
 
 type Props = {
     width: number
@@ -12,7 +14,21 @@ type Perspective = {
     y: -1 | 0 | 1
 }
 
+const initialButtonsContext:ButtonsContextType = {
+    a: false,
+    b: false,
+    arrowUp: false,
+    arrowRight: false,
+    arrowDown: false,
+    arrowLeft: false,
+    select: false,
+    start: false
+}
+
 export default function GameBoy({ width }:Props) {
+
+    const [buttons, setButtons] = useState(initialButtonsContext)
+
     const [on, setOn] = useState(false)
     const [a, setA] = useState(false)
     const [b, setB] = useState(false)
@@ -24,8 +40,24 @@ export default function GameBoy({ width }:Props) {
     const fontSize = unit < 8 ? 6 : 8
     const smallFontSize = unit < 8 ? 4 : 6
 
+    useEffect(() => {
+        console.log('buttons: ',buttons)
+    }, [buttons])
+
     const dPad = (x: -1 | 0 | 1, y: -1 | 0 | 1) => {
         setPerspective({x, y})
+    }
+
+    const handleButtonPressed = (button:string) => {
+        setButtons((prevState) => ({
+            ...prevState,
+            [button]: true
+        }))
+    }
+
+    const resetButtons = () => {
+        setButtons(initialButtonsContext)
+        dPad(0, 0)
     }
 
     return (
@@ -95,7 +127,9 @@ export default function GameBoy({ width }:Props) {
                             {
                                 on && (
                                 <GameBoyContext.Provider value={unit}>
+                                <ButtonsContext.Provider value={{buttons, handleButtonPressed, resetButtons, dPad}}>
                                     <Tetris />
+                                </ButtonsContext.Provider>
                                 </GameBoyContext.Provider>
                                )
                             }
@@ -124,22 +158,38 @@ export default function GameBoy({ width }:Props) {
                         <div 
                             className="flex justify-center h-1/3"
                         >
+                            {/* ARROWUP */}
                             <div
-                                id="topArrow"
+                                id="arrowUp"
                                 style={{ width: `${3 * unit}px` }}
                                 className="bg-gray-900 rounded-t-xl"
-                                onMouseDown={() => dPad(0, 1)}
-                                onMouseUp={() => dPad(0, 0)}
+                                onMouseDown={() => {
+                                    handleButtonPressed('arrowUp')
+                                }}
+                                onMouseUp={() => {
+                                    resetButtons()
+                                }}
+                                onMouseOut={() => {
+                                    resetButtons()
+                                }}
                             >
                             </div>
                         </div>
                         <div className='flex h-1/3'>
+                            {/* ARROWLEFT */}
                             <div
-                                id="leftArrow"
+                                id="arrowLeft"
                                 style={{ width: `${3 * unit}px` }}
                                 className="bg-gray-900 rounded-l-xl"
-                                onMouseDown={() => dPad(-1, 0)}
-                                onMouseUp={() => dPad(0, 0)}
+                                onMouseDown={() => {
+                                    handleButtonPressed('arrowLeft')
+                                }}
+                                onMouseUp={() => {
+                                    resetButtons()
+                                }}
+                                onMouseOut={() => {
+                                    resetButtons()
+                                }}
                             >
                             </div>
                             <div
@@ -149,22 +199,38 @@ export default function GameBoy({ width }:Props) {
                             >
                                 &#9711;
                             </div>
+                            {/* ARROWRIGHT */}
                             <div
-                                id="rightArrow"
+                                id="arrowRight"
                                 style={{ width: `${3 * unit}px` }}
                                 className="bg-gray-900 rounded-r-xl"
-                                onMouseDown={() => dPad(1, 0)}
-                                onMouseUp={() => dPad(0, 0)}
+                                onMouseDown={() => {
+                                    handleButtonPressed('arrowRight')
+                                }}
+                                onMouseUp={() => {
+                                    resetButtons()
+                                }}
+                                onMouseOut={() => {
+                                    resetButtons()
+                                }}
                             >
                             </div>
                         </div>
                         <div className='flex justify-center h-1/3'>
+                            {/* ARROWDOWN */}
                             <div
-                                id="bottomArrow"
+                                id="arrowDown"
                                 style={{ width: `${3 * unit}px` }}
                                 className="bg-gray-900 rounded-b-xl"
-                                onMouseDown={() => dPad(0, 1)}
-                                onMouseUp={() => dPad(0, 0)}
+                                onMouseDown={() => {
+                                    handleButtonPressed('arrowDown')
+                                }}
+                                onMouseUp={() => {
+                                    resetButtons()
+                                }}
+                                onMouseOut={() => {
+                                    resetButtons()
+                                }}
                             >
                             </div>
                         </div>
@@ -179,11 +245,15 @@ export default function GameBoy({ width }:Props) {
                         <button
                             id="A"
                             style={{ width: `${5 * unit}px`, height: `${5 * unit}px` }}
-                            className={`bg-[#761d54] rounded-full border-2 border-[#6a1d4c] ${a ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
-                            onMouseDown={() => setA(true)}
-                            onMouseUp={() => setA(false)}
-                            onMouseLeave={() => {
-                                if (a) setA(false)
+                            className={`bg-[#761d54] rounded-full border-2 border-[#6a1d4c] ${buttons.a ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
+                            onMouseDown={() => {
+                                handleButtonPressed('a')
+                            }}
+                            onMouseUp={() => {
+                                resetButtons()
+                            }}
+                            onMouseOut={() => {
+                                resetButtons()
                             }}
                         />
                         <div 
@@ -199,11 +269,15 @@ export default function GameBoy({ width }:Props) {
                         <button
                             id="B"
                             style={{ width: `${5 * unit}px`, height: `${5 * unit}px` }}
-                            className={`bg-[#761d54] rounded-full border-2 border-[#6a1d4c] ${b ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
-                            onMouseDown={() => setB(true)}
-                            onMouseUp={() => setB(false)}
-                            onMouseLeave={() => {
-                                if (b) setB(false)
+                            className={`bg-[#761d54] rounded-full border-2 border-[#6a1d4c] ${buttons.b ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
+                            onMouseDown={() => {
+                                handleButtonPressed('b')
+                            }}
+                            onMouseUp={() => {
+                                resetButtons()
+                            }}
+                            onMouseOut={() => {
+                                resetButtons()
                             }}
                         />
                         <div 
