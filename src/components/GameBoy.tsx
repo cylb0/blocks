@@ -72,7 +72,7 @@ export default function GameBoy({ width }:Props) {
     return (
         <div
             style={{ height: `${60.5 * unit}px` }} 
-            className="flex items-center relative">
+            className="flex items-center relative select-none">
             {/* Console */}
             <div
                 id="box"
@@ -380,12 +380,13 @@ export default function GameBoy({ width }:Props) {
                 <div
                     style={{ top: 15 * unit, left: 36 * unit, maxWidth: 36 * unit }}
                     className="absolute z-50 bg-quaternary p-5 ms-5 rounded-xl">
+                        <h2 className="text-center text-xl">Raccourcis clavier</h2>
                     {
                         Object.entries(controls).map(([key, value]) => (
                             <div 
                                 key={key}
                                 className="my-2">
-                                <span className="text-black">{key}</span>: {value}
+                                <span className="font-black text-primary">{key}</span>: <span className="text-secondary">{value}</span>
                             </div>
                         ))
                     }
