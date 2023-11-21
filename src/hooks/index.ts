@@ -4,4 +4,4 @@ import { usePlayer } from './usePlayer'
 import { useLevel } from './useLevel'
 import { useTickTimer } from './useTickTimer'
 
-export { useGrid, usePlayer, useLevel, useTickTimer }
+export { useGrid, useInterval, usePlayer, useLevel, useTickTimer }

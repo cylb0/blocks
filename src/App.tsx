@@ -3,7 +3,9 @@ import GameBoy from './components/GameBoy'
 function App() {
 
   return (
-    <GameBoy width={350} />
+    <div className="h-screen flex justify-center items-center">
+      <GameBoy width={350} />
+    </div>
   )
 }
 

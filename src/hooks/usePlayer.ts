@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { randomTetromino } from "../constants/tetrominos"
 import { Player } from "../types"
 import { WIDTH } from "../constants/constants"

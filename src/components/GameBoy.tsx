@@ -29,15 +29,30 @@ const initialButtonsContext:ButtonsContextType = {
 
 export default function GameBoy({ width }:Props) {
 
+    const [isMobile, setIsMobile] = useState(false)
+
     const [buttons, setButtons] = useState(initialButtonsContext)
     const [selectPressed, setSelectPressed] = useState(true)
     const [on, setOn] = useState(false)
     const [perspective, setPerspective] = useState<Perspective>({x: 0, y: 0})
 
-    const unit = width / 36
+    const unit = isMobile ? window.screen.width / 36 : width / 36
     const fontSize = unit < 8 ? 6 : 8
     const smallFontSize = unit < 8 ? 4 : 6
 
+    // WINDOW.MATCHMEDIA for mobile gameboy scaling
+    useEffect(() => {
+        const mediaQuery = window.matchMedia('(max-width: 500px)')
+        setIsMobile(mediaQuery.matches)
+
+        const handleMediaQueryChange = (event:MediaQueryListEvent) => setIsMobile(event.matches)
+        mediaQuery.addEventListener('change', handleMediaQueryChange)
+        return () => {
+            mediaQuery.removeEventListener('change', handleMediaQueryChange)
+        }
+    }, [])
+
+    // Clicks dPad
     useEffect(() => {
         if (buttons.arrowRight) {
             setPerspective({x: 1, y: 0})
@@ -305,7 +320,9 @@ export default function GameBoy({ width }:Props) {
                             id="select"
                             style={{ width: `${4 * unit}px`, height: `${unit}px` }}
                             className={`rounded bg-gray-500 border-2 border-gray-600 border-opacity-50 box-border ${buttons.select ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
-                            onClick={() => setSelectPressed(!selectPressed)}
+                            onClick={() => {
+                                setSelectPressed(!selectPressed)
+                            }}
                             onMouseDown={() => {
                                 handleButtonPressed('select')
                             }}
@@ -369,17 +386,17 @@ export default function GameBoy({ width }:Props) {
                         style={{ left: `${13 * unit}px`, bottom: `0px`, fontSize: `${fontSize}px`}}
                         className={`absolute mb-3 inline-block h-50 text-gray-400 bg-gray-500 bg-opacity-50 rounded-full p-1`}
                         >
-                        CYLB
+                        <a href="https://www.cylb.fr">CYLB</a>
                     </div> 
                 </div>
             </div>
 
             {/* INFO TOOLBOX */}
             {
-                selectPressed &&
+                !isMobile && selectPressed &&
                 <div
-                    style={{ top: 15 * unit, left: 36 * unit, maxWidth: 36 * unit }}
-                    className="absolute z-50 bg-quaternary p-5 ms-5 rounded-xl">
+                    style={{ top: 0, left: `${36 * unit}px`, maxWidth: `${36 * unit}px`, marginLeft: `${unit}px` }}
+                    className="absolute z-50 bg-quaternary p-5 rounded-xl">
                         <h2 className="text-center text-xl">Raccourcis clavier</h2>
                     {
                         Object.entries(controls).map(([key, value]) => (
@@ -397,7 +414,7 @@ export default function GameBoy({ width }:Props) {
             <div
                 id="switch"
                 style={{ width: `${unit}px`, height: `${0.5 * unit}px`, top: `${0}px`, left: `${ on ? 6 * unit : 4 * unit}px` }}
-                className="absolute bg-gray-400 hover:cursor-pointer"
+                className="absolute bg-gray-400 hover:cursor-pointer outline-none !important"
                 onClick={() => {
                     setOn(!on)
                 }}
