@@ -30,10 +30,6 @@ export default function GameBoy({ width }:Props) {
     const [buttons, setButtons] = useState(initialButtonsContext)
 
     const [on, setOn] = useState(false)
-    const [a, setA] = useState(false)
-    const [b, setB] = useState(false)
-    const [select, setSelect] = useState(false)
-    const [start, setStart] = useState(false)
     const [perspective, setPerspective] = useState<Perspective>({x: 0, y: 0})
 
     const unit = width / 36
@@ -41,7 +37,18 @@ export default function GameBoy({ width }:Props) {
     const smallFontSize = unit < 8 ? 4 : 6
 
     useEffect(() => {
-        console.log('buttons: ',buttons)
+        if (buttons.arrowRight) {
+            setPerspective({x: 1, y: 0})
+        }
+        if (buttons.arrowDown) {
+            setPerspective({x: 0, y: -1})
+        }
+        if (buttons.arrowLeft) {
+            setPerspective({x: -1, y: 0})
+        }
+        if (buttons.arrowUp) {
+            setPerspective({x: 0, y: 1})
+        }
     }, [buttons])
 
     const dPad = (x: -1 | 0 | 1, y: -1 | 0 | 1) => {

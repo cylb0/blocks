@@ -13,10 +13,6 @@ export const usePlayer = ():[Player, ({x, y, collides}:{x: number, y:number, col
         collides: false
     })
 
-    useEffect(() => {
-        console.log(player.position.y, player.position.x)
-    })
-
     const updatePlayerPosition = ({ x, y, collides }: {x: number, y: number, collides: boolean}) => {
         setPlayer(prevState => ({
             ...prevState,

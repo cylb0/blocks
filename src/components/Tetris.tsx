@@ -24,8 +24,8 @@ export default function Tetris () {
     const { buttons, handleButtonPressed, resetButtons, dPad } = useButtonsContext()
     const keyPressed = useRef(false)
 
-    const [booted, setBooted] = useState(true)
-    const [start, setStart] = useState(true)
+    const [booted, setBooted] = useState(false)
+    const [start, setStart] = useState(false)
     const [player, updatePlayerPosition, resetPlayer, rotatePlayer] = usePlayer()
     const [grid, setGrid, checkCompleteRows] = useGrid(player, resetPlayer)
     const [paused, setPaused] = useState<boolean>(false)
@@ -40,18 +40,21 @@ export default function Tetris () {
 
     const unit = useUnitContext()
 
+    // Set speed of the game
     useEffect(() => {
         if (speedUp[level as keyof typeof speedUp]) {
             setTick(Math.floor((speedUp[level as keyof typeof speedUp] / FRAME_RATE)*1000))
         }
     }, [level, tick])
 
+    // Booting screen
     useEffect(() => {
         setTimeout(() => {
             setBooted(true)
         }, 3000)
     }, [booted])
 
+    // Event listeners keyboard
     useEffect(() => {
 
         const handleKeyUp = () => {
@@ -105,34 +108,7 @@ export default function Tetris () {
         }
     }, [player.position, gameOver])
 
-    useEffect(() => {
-        const completeLines = checkCompleteRows()
-        if(completeLines > 0) {
-            setLines(lines + completeLines)
-            setScore(score + (level === 0 ? scores[completeLines] : (level + 1) * scores[completeLines]))
-        } 
-    }, [player.position])
-
-    useInterval(() => dropPosition(), tick, gameOver, paused)
-
-    const startGame = () => {
-        setStart(true)
-        setGameOver(false)
-        setPaused(false)
-        setGrid(initialGrid)
-        resetPlayer()
-        setLines(0)
-        setScore(0)
-    }
-
-    const togglePause = () => {
-        setPaused(prevState => !prevState)
-    }
-
-    const quitGame = () => {
-        setStart(false)
-    }
-
+    // Actions induced by keyboard AND gameboy buttons inputs
     useEffect(() => {
         if (buttons.a) {
             if (gameOver) {
@@ -184,6 +160,32 @@ export default function Tetris () {
             }
         }
     }, [buttons])
+
+    // Lines completes handler
+    useEffect(() => {
+        const completeLines = checkCompleteRows()
+        if(completeLines > 0) {
+            setLines(lines + completeLines)
+            setScore(score + (level === 0 ? scores[completeLines] : (level + 1) * scores[completeLines]))
+        } 
+    }, [player.position])
+
+    // Custom hook for ticks
+    useInterval(() => dropPosition(), tick, gameOver, paused)
+
+    const startGame = () => {
+        setStart(true)
+        setGameOver(false)
+        setPaused(false)
+        setGrid(initialGrid)
+        resetPlayer()
+        setLines(0)
+        setScore(0)
+    }
+
+    const togglePause = () => {
+        setPaused(prevState => !prevState)
+    }
 
     const resetDropBonus = () => {
         setDownPressed(false)
