@@ -5,6 +5,8 @@ import { GameBoyContext } from '../contexts/useUnitContext'
 import { ButtonsContext } from '../contexts/useButtonsContext'
 import { ButtonsContextType } from '../types'
 
+import { controls } from '../constants/constants'
+
 type Props = {
     width: number
 }
@@ -28,7 +30,7 @@ const initialButtonsContext:ButtonsContextType = {
 export default function GameBoy({ width }:Props) {
 
     const [buttons, setButtons] = useState(initialButtonsContext)
-
+    const [selectPressed, setSelectPressed] = useState(true)
     const [on, setOn] = useState(false)
     const [perspective, setPerspective] = useState<Perspective>({x: 0, y: 0})
 
@@ -70,7 +72,8 @@ export default function GameBoy({ width }:Props) {
     return (
         <div
             style={{ height: `${60.5 * unit}px` }} 
-            className="flex items-center">
+            className="flex items-center relative">
+            {/* Console */}
             <div
                 id="box"
                 style={{ width: `${36 * unit}px`, height: `${60 * unit}px`, borderBottomRightRadius: `${10 * unit}px`}}
@@ -302,6 +305,7 @@ export default function GameBoy({ width }:Props) {
                             id="select"
                             style={{ width: `${4 * unit}px`, height: `${unit}px` }}
                             className={`rounded bg-gray-500 border-2 border-gray-600 border-opacity-50 box-border ${buttons.select ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
+                            onClick={() => setSelectPressed(!selectPressed)}
                             onMouseDown={() => {
                                 handleButtonPressed('select')
                             }}
@@ -318,7 +322,6 @@ export default function GameBoy({ width }:Props) {
                             SELECT
                         </div>
                     </div>
-                    
 
                     {/* START BUTTON */}
                     <div
@@ -370,6 +373,26 @@ export default function GameBoy({ width }:Props) {
                     </div> 
                 </div>
             </div>
+
+            {/* INFO TOOLBOX */}
+            {
+                selectPressed &&
+                <div
+                    style={{ top: 15 * unit, left: 36 * unit, maxWidth: 36 * unit }}
+                    className="absolute z-50 bg-quaternary p-5 ms-5 rounded-xl">
+                    {
+                        Object.entries(controls).map(([key, value]) => (
+                            <div 
+                                key={key}
+                                className="my-2">
+                                <span className="text-black">{key}</span>: {value}
+                            </div>
+                        ))
+                    }
+                </div>
+            }
+                
+            {/* Switch ON/OFF */}
             <div
                 id="switch"
                 style={{ width: `${unit}px`, height: `${0.5 * unit}px`, top: `${0}px`, left: `${ on ? 6 * unit : 4 * unit}px` }}

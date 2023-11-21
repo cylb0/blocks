@@ -35,3 +35,13 @@ export const scores:Record<number,number> = {
     3: 300,
     4: 1200
 }
+
+export const controls = {
+    D: "A - Rotation horaire",
+    S: "B - Rotation anti-horaire",
+    Espace: "Start - Pause",
+    CtrlGauche: "Select - Contrôles",
+    Droite: "Flèche de droite - Déplacement vers la droite",
+    Gauche: "Flèche de gauche - Déplacement vers la gauche",
+    Bas: "Flèche du bas - Descendre, laisser enfoncé pour chuter"
+}
