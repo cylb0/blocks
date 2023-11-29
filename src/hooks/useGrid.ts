@@ -11,7 +11,6 @@ export const useGrid = (player:Player, resetPlayer:() => void):[GridContent, Rea
             const newGrid = prevGrid.map((row) => 
                 row.map((cell) => (cell.sticks ? cell : {content: Empty.Empty, sticks: false }))
             )
-
             player.currentTetromino.shape.forEach((row, rowIndex) => {
                 row.forEach((cell, cellIndex) => {
                     if (cell === 1) {

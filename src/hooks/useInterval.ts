@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef } from "react"
 
-export const useInterval = (callback:() => void, delay:number, gameOver: boolean, paused: boolean) => {
+export const useInterval = (callback:() => void, delay: number | null) => {
     const savedCallback = useRef<() => void | null>()
 
     useEffect(() => {
@@ -9,12 +9,14 @@ export const useInterval = (callback:() => void, delay:number, gameOver: boolean
 
     useEffect(() => {
         function tick() {
-            if (savedCallback.current)
-            savedCallback.current()
+            if (savedCallback.current) {
+                savedCallback.current()
+            }
         }
-        if (delay !== null && !gameOver && !paused) {
+
+        if (delay !== null) {
             const id = setInterval(tick, delay)
             return () => clearInterval(id)
         }
-    }, [delay, gameOver, paused])
+    }, [delay])
 }

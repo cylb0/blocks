@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import Tetris from "./Tetris"
 import { GameBoyContext } from '../contexts/useUnitContext'
@@ -27,18 +27,45 @@ const initialButtonsContext:ButtonsContextType = {
     start: false
 }
 
+type ButtonsPressed = {
+    a: boolean,
+    b: boolean,
+    arrowUp: boolean,
+    arrowRight: boolean,
+    arrowDown: boolean,
+    arrowLeft: boolean,
+    select: boolean,
+    start: boolean
+}
+const initialButtonsPressed = {
+    a: false,
+    b: false,
+    arrowUp: false,
+    arrowRight: false,
+    arrowDown: false,
+    arrowLeft: false,
+    select: false,
+    start: false
+}
+
 export default function GameBoy({ width }:Props) {
 
     const [isMobile, setIsMobile] = useState(false)
 
     const [buttons, setButtons] = useState(initialButtonsContext)
-    const [selectPressed, setSelectPressed] = useState(true)
-    const [on, setOn] = useState(false)
+    const [on, setOn] = useState(true)
     const [perspective, setPerspective] = useState<Perspective>({x: 0, y: 0})
 
     const unit = isMobile ? window.screen.width / 36 : width / 36
     const fontSize = unit < 8 ? 6 : 8
     const smallFontSize = unit < 8 ? 4 : 6
+
+    const keyPressed = useRef<boolean>(false)
+    const buttonsPressed = useRef<ButtonsPressed>(initialButtonsPressed)
+
+    useEffect(() => {
+        console.log(buttons)
+    }, [buttons])
 
     // WINDOW.MATCHMEDIA for mobile gameboy scaling
     useEffect(() => {
@@ -52,7 +79,7 @@ export default function GameBoy({ width }:Props) {
         }
     }, [])
 
-    // Clicks dPad
+    // DPAD PESPECTIVE
     useEffect(() => {
         if (buttons.arrowRight) {
             setPerspective({x: 1, y: 0})
@@ -72,15 +99,142 @@ export default function GameBoy({ width }:Props) {
         setPerspective({x, y})
     }
 
-    const handleButtonPressed = (button:string) => {
+    const handleButtonPressed = (button: keyof ButtonsContextType) => {
         setButtons((prevState) => ({
             ...prevState,
             [button]: true
         }))
     }
 
+    const pressButton = (button: keyof ButtonsContextType) => {
+        buttonsPressed.current = {
+            ...buttonsPressed.current,
+            [button]: true
+        }
+    }
+    const releaseButton = (button: keyof ButtonsContextType) => {
+        buttonsPressed.current = {
+            ...buttonsPressed.current,
+            [button]: false
+        }
+    }
+
+    useEffect(() => {
+        
+        const handleKeyUp = (e:KeyboardEvent) => {
+            if (e.key === 's') {
+                releaseButton('b')
+                resetButton('b')
+            }
+            if (e.key === 'd') {
+                releaseButton('a')
+                resetButton('a')
+            }
+            if (e.key === 'ArrowDown') {
+                releaseButton('arrowDown')
+                resetButton('arrowDown')
+            }
+            if (e.key === 'ArrowLeft') {
+                releaseButton('arrowLeft')
+                resetButton('arrowLeft')
+            }
+            if (e.key === 'ArrowRight') {
+                releaseButton('arrowRight')
+                resetButton('arrowRight')
+            }
+            if (e.key === 'ArrowUp') {
+                releaseButton('arrowUp')
+                resetButton('arrowUp')
+            }
+            if (e.key === ' ') {
+                releaseButton('start')
+            }
+            if (e.key === 'Control') {
+                releaseButton('select')
+            }
+        }
+
+        const handleKeyDown = (e:KeyboardEvent) => {
+            e.preventDefault()
+            
+            if (e.key === 's') {
+                if (!buttonsPressed.current.b) {
+                    pressButton('b')
+                    handleButtonPressed('b')
+                }
+            }
+            if (e.key === 'd') {
+                if (!buttonsPressed.current.a) {
+                    pressButton('a')
+                    handleButtonPressed('a')
+                }
+            }
+            if (e.key === 'ArrowDown') {
+                if (!buttonsPressed.current.arrowDown) {
+                    pressButton('arrowDown')
+                    handleButtonPressed('arrowDown')
+                }
+            }
+            if (e.key === 'ArrowLeft') {
+                if (!buttonsPressed.current.arrowLeft) {
+                    pressButton('arrowLeft')
+                    handleButtonPressed('arrowLeft')
+                }
+            }
+            if (e.key === 'ArrowRight') {
+                if (!buttonsPressed.current.arrowRight) {
+                    pressButton('arrowRight')
+                    handleButtonPressed('arrowRight')
+                }
+            }
+            if (e.key === 'ArrowUp') {
+                if (!buttonsPressed.current.arrowUp) {
+                    pressButton('arrowUp')
+                    handleButtonPressed('arrowUp')
+                }
+            }
+            if (e.key === ' ') {
+                if (!buttonsPressed.current.start) {
+                    pressButton('start')
+                    toggleButton('start')
+                }
+            }
+            if (e.key === 'Control') {
+                if (!buttonsPressed.current.select) {
+                    pressButton('select')
+                    toggleButton('select')
+                }
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown)
+        window.addEventListener('keyup', handleKeyUp)
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown)
+            window.removeEventListener('keyup', handleKeyUp)
+        }
+    }, [])
+
     const resetButtons = () => {
-        setButtons(initialButtonsContext)
+        setButtons((prevState) => ({
+            ...initialButtonsContext,
+            ['select']: prevState.select
+        }))
+        dPad(0, 0)
+    }
+    const resetButton = (button: keyof ButtonsContextType) => {
+        setButtons((prevState) => ({
+            ...prevState,
+            [button]: false
+        }))
+        dPad(0, 0)
+    }
+    const toggleButton = (button: keyof ButtonsContextType) => {
+        setButtons((prevState) => ({
+            ...prevState,
+            [button]: !prevState[button] as boolean
+        }))
         dPad(0, 0)
     }
 
@@ -94,6 +248,9 @@ export default function GameBoy({ width }:Props) {
                 style={{ width: `${36 * unit}px`, height: `${60 * unit}px`, borderBottomRightRadius: `${10 * unit}px`}}
                 className="relative bg-gray-400 rounded-xl flex flex-col justify-between overflow-hidden"
             >
+                <div>{keyPressed.current.toString()}</div>
+
+                {/* ON/OFF */}
                 <div 
                     style={{ height: `${2.5 * unit}px` }}
                     className="flex w-full justify-between"
@@ -113,6 +270,7 @@ export default function GameBoy({ width }:Props) {
                             className={`m-1 inline-block h-50 text-gray-400 bg-gray-500 bg-opacity-50 rounded-full p-1 hover:cursor-pointer`}
                             onClick={() => {
                                 setOn(!on)
+                                resetButtons()
                             }}
                             >
                             &#9664;OFF&#8226;ON&#9654;
@@ -128,6 +286,7 @@ export default function GameBoy({ width }:Props) {
                     style={{ height: `${57 * unit}px` }}
                     className="flex flex-col items-center border-t-4 border-gray-500 border-opacity-50 box-border"
                 >
+                    {/* SCREEN */}
                     <div
                         id="screen-lense"
                         style={{ width: `${31 * unit}px`, height: `${24 * unit}px`, marginTop: `${unit}px`, borderBottomRightRadius: `${6 * unit}px`}}
@@ -152,7 +311,7 @@ export default function GameBoy({ width }:Props) {
                             {
                                 on && (
                                 <GameBoyContext.Provider value={unit}>
-                                <ButtonsContext.Provider value={{buttons, handleButtonPressed, resetButtons, dPad}}>
+                                <ButtonsContext.Provider value={{buttons, resetButton, resetButtons, dPad}}>
                                     <Tetris />
                                 </ButtonsContext.Provider>
                                 </GameBoyContext.Provider>
@@ -160,6 +319,7 @@ export default function GameBoy({ width }:Props) {
                             }
                         </div>
                     </div>
+                    {/* MORGANBOY */}
                     <div id="morganBoy" style={{ marginLeft: `${5 * unit}px`}} className="w-full text-start">
                         <span style={{ fontFamily: 'Roboto', fontSize: `${1.5 * unit}px` }} className='font-black tracking-wide text-blue-800'>
                             Morgan</span>
@@ -184,39 +344,39 @@ export default function GameBoy({ width }:Props) {
                             className="flex justify-center h-1/3"
                         >
                             {/* ARROWUP */}
-                            <div
+                            <button
                                 id="arrowUp"
                                 style={{ width: `${3 * unit}px` }}
                                 className="bg-gray-900 rounded-t-xl"
-                                onMouseDown={() => {
+                                onPointerDown={() => {
                                     handleButtonPressed('arrowUp')
                                 }}
-                                onMouseUp={() => {
-                                    resetButtons()
+                                onPointerUp={() => {
+                                    resetButton('arrowUp')
                                 }}
-                                onMouseOut={() => {
-                                    resetButtons()
+                                onPointerOut={() => {
+                                    resetButton('arrowUp')
                                 }}
-                            >
-                            </div>
+                                onContextMenu={(e) => e.preventDefault() }
+                            />
                         </div>
                         <div className='flex h-1/3'>
                             {/* ARROWLEFT */}
-                            <div
+                            <button
                                 id="arrowLeft"
                                 style={{ width: `${3 * unit}px` }}
                                 className="bg-gray-900 rounded-l-xl"
-                                onMouseDown={() => {
+                                onPointerDown={() => {
                                     handleButtonPressed('arrowLeft')
                                 }}
-                                onMouseUp={() => {
-                                    resetButtons()
+                                onPointerUp={() => {
+                                    resetButton('arrowLeft')
                                 }}
-                                onMouseOut={() => {
-                                    resetButtons()
+                                onPointerOut={() => {
+                                    resetButton('arrowLeft')
                                 }}
-                            >
-                            </div>
+                                onContextMenu={(e) => e.preventDefault() }
+                            />
                             <div
                                 id="center"
                                 style={{ width: `${3 * unit}px`, fontSize: `${2 * unit}px` }}
@@ -225,39 +385,39 @@ export default function GameBoy({ width }:Props) {
                                 &#9711;
                             </div>
                             {/* ARROWRIGHT */}
-                            <div
+                            <button
                                 id="arrowRight"
                                 style={{ width: `${3 * unit}px` }}
                                 className="bg-gray-900 rounded-r-xl"
-                                onMouseDown={() => {
+                                onPointerDown={() => {
                                     handleButtonPressed('arrowRight')
                                 }}
-                                onMouseUp={() => {
-                                    resetButtons()
+                                onPointerUp={() => {
+                                    resetButton('arrowRight')
                                 }}
-                                onMouseOut={() => {
-                                    resetButtons()
+                                onPointerOut={() => {
+                                    resetButton('arrowRight')
                                 }}
-                            >
-                            </div>
+                                onContextMenu={(e) => e.preventDefault() }
+                            />
                         </div>
                         <div className='flex justify-center h-1/3'>
                             {/* ARROWDOWN */}
-                            <div
+                            <button
                                 id="arrowDown"
                                 style={{ width: `${3 * unit}px` }}
                                 className="bg-gray-900 rounded-b-xl"
-                                onMouseDown={() => {
+                                onPointerDown={() => {
                                     handleButtonPressed('arrowDown')
                                 }}
-                                onMouseUp={() => {
-                                    resetButtons()
+                                onPointerUp={() => {
+                                    resetButton('arrowDown')
                                 }}
-                                onMouseOut={() => {
-                                    resetButtons()
+                                onPointerOut={() => {
+                                    resetButton('arrowDown')
                                 }}
-                            >
-                            </div>
+                                onContextMenu={(e) => e.preventDefault() }
+                            />
                         </div>
                     </div>
                     <div>
@@ -270,16 +430,18 @@ export default function GameBoy({ width }:Props) {
                         <button
                             id="A"
                             style={{ width: `${5 * unit}px`, height: `${5 * unit}px` }}
-                            className={`bg-[#761d54] rounded-full border-2 border-[#6a1d4c] ${buttons.a ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
-                            onMouseDown={() => {
-                                handleButtonPressed('a')
+                            className={`bg-[#761d54] focus:outline-none rounded-full border-2 border-[#6a1d4c] ${buttons.a ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
+                            onPointerDown={() => {
+                                if (!buttons.start) handleButtonPressed('a')
                             }}
-                            onMouseUp={() => {
-                                resetButtons()
+                            onPointerUp={() => {
+                                resetButton('a')
+                                resetButton('start')
                             }}
-                            onMouseOut={() => {
-                                resetButtons()
+                            onPointerOut={() => {
+                                resetButton('a')
                             }}
+                            onContextMenu={(e) => e.preventDefault() }
                         />
                         <div 
                             style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: `${1.5 * unit}px` }}
@@ -295,15 +457,16 @@ export default function GameBoy({ width }:Props) {
                             id="B"
                             style={{ width: `${5 * unit}px`, height: `${5 * unit}px` }}
                             className={`bg-[#761d54] rounded-full border-2 border-[#6a1d4c] ${buttons.b ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
-                            onMouseDown={() => {
+                            onPointerDown={() => {
                                 handleButtonPressed('b')
                             }}
-                            onMouseUp={() => {
-                                resetButtons()
+                            onPointerUp={() => {
+                                resetButton('b')
                             }}
-                            onMouseOut={() => {
-                                resetButtons()
+                            onPointerOut={() => {
+                                resetButton('b')
                             }}
+                            onContextMenu={(e) => e.preventDefault() }
                         />
                         <div 
                             style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: `${1.5 * unit}px` }}
@@ -321,17 +484,9 @@ export default function GameBoy({ width }:Props) {
                             style={{ width: `${4 * unit}px`, height: `${unit}px` }}
                             className={`rounded bg-gray-500 border-2 border-gray-600 border-opacity-50 box-border ${buttons.select ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
                             onClick={() => {
-                                setSelectPressed(!selectPressed)
+                                toggleButton('select')
                             }}
-                            onMouseDown={() => {
-                                handleButtonPressed('select')
-                            }}
-                            onMouseUp={() => {
-                                resetButtons()
-                            }}
-                            onMouseOut={() => {
-                                resetButtons()
-                            }}
+                            onContextMenu={(e) => e.preventDefault() }
                         />
                         <div 
                             style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: `${unit}px` }}
@@ -349,15 +504,10 @@ export default function GameBoy({ width }:Props) {
                             id="start"
                             style={{ width: `${4 * unit}px`, height: `${unit}px` }}
                             className={`rounded bg-gray-500 border-2 border-gray-600 border-opacity-50 box-border ${buttons.start ? 'border-2 border-gray-600 scale-95' : ''} hover:cursor-pointer`}
-                            onMouseDown={() => {
-                                handleButtonPressed('start')
+                            onClick={() => {
+                                toggleButton('start')
                             }}
-                            onMouseUp={() => {
-                                resetButtons()
-                            }}
-                            onMouseOut={() => {
-                                resetButtons()
-                            }}
+                            onContextMenu={(e) => e.preventDefault() }
                         />
                         <div 
                             style={{ fontFamily: 'Montserrat Alternates, sans-serif', fontSize: `${unit}px` }}
@@ -393,7 +543,7 @@ export default function GameBoy({ width }:Props) {
 
             {/* INFO TOOLBOX */}
             {
-                !isMobile && selectPressed &&
+                !isMobile && buttons.select &&
                 <div
                     style={{ top: 0, left: `${36 * unit}px`, maxWidth: `${36 * unit}px`, marginLeft: `${unit}px` }}
                     className="absolute z-50 bg-quaternary p-5 rounded-xl">

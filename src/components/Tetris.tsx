@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import GameOver from './GameOver'
 import Grid from './Grid'
@@ -13,7 +13,7 @@ import { useGrid, usePlayer, useLevel, useTickTimer } from '../hooks'
 import { isColliding } from '../helpers/collisionHelper'
 import { FRAME_RATE, initialGrid, scores, speedUp } from '../constants/constants'
 import { rotate } from '../helpers/tetrominoHelper'
-import { useInterval } from '../hooks/useInterval'
+import { useTickInterval } from '../hooks/useTickInterval'
 import { useUnitContext } from '../contexts/useUnitContext'
 import Boot from './Boot'
 import { useButtonsContext } from '../contexts/useButtonsContext'
@@ -21,22 +21,25 @@ import Pause from './Pause'
 
 export default function Tetris () {
 
-    const { buttons, handleButtonPressed, resetButtons, dPad } = useButtonsContext()
-    const keyPressed = useRef(false)
+    const { buttons, resetButton, resetButtons } = useButtonsContext()
 
-    const [booted, setBooted] = useState(false)
-    const [start, setStart] = useState(false)
     const [player, updatePlayerPosition, resetPlayer, rotatePlayer] = usePlayer()
     const [grid, setGrid, checkCompleteRows] = useGrid(player, resetPlayer)
-    const [paused, setPaused] = useState<boolean>(false)
 
-    const [lines, setLines] = useState(0)
-    const [score, setScore] = useState(0)
+    const [booted, setBooted] = useState<boolean>(false)
+    const [start, setStart] = useState<boolean>(false)
+    const [paused, setPaused] = useState<boolean>(false)
+    const [gameOver, setGameOver] = useState<boolean>(false)
+
+    const [lines, setLines] = useState<number>(0)
+    const [score, setScore] = useState<number>(0)
     const [level] = useLevel(lines)
     const [tick, setTick] = useTickTimer(level)
-    const [gameOver, setGameOver] = useState(false)
-    const [dropBonus, setDropBonus] = useState(0)
-    const [downPressed, setDownPressed] = useState(false)
+
+    const [dropBonus, setDropBonus] = useState<number>(0)
+    const [downPressed, setDownPressed] = useState<boolean>(false)
+    const [leftPressed, setLeftPressed] = useState<boolean>(false)
+    const [rightPressed, setRightPressed] = useState<boolean>(false)
 
     const unit = useUnitContext()
 
@@ -45,7 +48,7 @@ export default function Tetris () {
         if (speedUp[level as keyof typeof speedUp]) {
             setTick(Math.floor((speedUp[level as keyof typeof speedUp] / FRAME_RATE)*1000))
         }
-    }, [level, tick])
+    }, [level])
 
     // Booting screen
     useEffect(() => {
@@ -54,112 +57,119 @@ export default function Tetris () {
         }, 3000)
     }, [booted])
 
-    // Event listeners keyboard
-    useEffect(() => {
-
-        const handleKeyUp = () => {
-            resetDropBonus()
-            resetButtons()
-            resetKeyPressed()
+    // DROP MOVEMENT
+    const handleDownPressed = () => {
+        if (!downPressed) {
+            setDownPressed(true)
+            dropPosition()
         }
+    }
+    const handleDownReleased = () => {
+        setDownPressed(false)
+    }
+    useEffect(() => {
+        let downIntervalId:any
+        if (downPressed) {
+            downIntervalId = setInterval(() => {
+                dropPosition()
+            }, 40)
+        }
+        return () => clearInterval(downIntervalId)
+    }, [downPressed, player])
 
-        const handleKeyDown = (e:KeyboardEvent) => {
-            e.preventDefault()
+    // MOVEMENT TO THE LEFT
+    const handleLeftPressed = () => {
+        if(!leftPressed) {
+            setLeftPressed(true)
+            changePosition(-1)
+        }
+    }
+    const handleLeftReleased = () => {
+        setLeftPressed(false)
+    }
+    useEffect(() => {
+        let leftIntervalId:any
+        if (leftPressed) {
+            leftIntervalId = setInterval(() => {
+                changePosition(-1)
+            }, 200)
+        }
+        return () => clearInterval(leftIntervalId)
+    }, [leftPressed, player])
 
-            if (!keyPressed.current) {
-                keyPressed.current = true
-                switch (e.key) {
-                    case ' ':
-                        handleButtonPressed('start')
-                        break
-                    case 'Control': 
-                        handleButtonPressed('select')
-                        break
-                    case 'ArrowUp': 
-                        handleButtonPressed('arrowUp')
-                        break
-                    case 'ArrowLeft':
-                        handleButtonPressed('arrowLeft')
-                        break
-                    case 'ArrowRight': 
-                        handleButtonPressed('arrowRight')
-                        break
-                    case 'ArrowDown':
-                        handleButtonPressed('arrowDown')
-                        break
-                    case 's':
-                        handleButtonPressed('b')
-                        break
-                    case 'd':
-                        handleButtonPressed('a')
-                        break
-                    default: 
-                        break
-                }
+    // MOVEMENT TO THE RIGHT
+    const handleRightPressed = () => {
+        if(!rightPressed) {
+            setRightPressed(true)
+            changePosition(1)
+        }
+    }
+    const handleRightReleased = () => {
+        setRightPressed(false)
+    }
+    useEffect(() => {
+        let rightIntervalId:any
+        if (rightPressed) {
+            rightIntervalId = setInterval(() => {
+                changePosition(1)
+            }, 200)
+        }
+        return () => clearInterval(rightIntervalId)
+    }, [rightPressed, player])
+
+    // PAUSE
+    useEffect(() => {
+        setPaused(buttons.start)
+    }, [buttons.start])
+
+    // BUTTONS ACTION MAPPING
+    useEffect(() => {
+        if (buttons.b) {
+            if (booted && start && !paused && !gameOver) {
+                rotateBlock(-1)
+                resetButton('b')
             }
         }
-
-        window.addEventListener('keydown', handleKeyDown)
-        window.addEventListener('keyup', handleKeyUp)
-        
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown)
-            window.removeEventListener('keyup', handleKeyUp)
-        }
-    }, [player.position, gameOver])
-
-    // Actions induced by keyboard AND gameboy buttons inputs
-    useEffect(() => {
         if (buttons.a) {
-            if (gameOver) {
+            if (booted && !start || gameOver) {
                 startGame()
             }
-            if (paused) {
-                togglePause()
-            }
-            if (!gameOver && !paused) {
+            if (booted && start && !paused && !gameOver) {
                 rotateBlock(1)
+                resetButton('a')
             }
-        }
-        if (buttons.b) {
-            if (!gameOver && !paused) {
-                rotateBlock(-1)
+            if (booted && start && paused) {
+                togglePause()
+                resetButton('start')
             }
         }
         if (buttons.arrowDown) {
-            keyPressed.current = false
-            dPad(0, -1)
-            if (!gameOver && !paused) {
-                setDownPressed(true)
-                dropPosition()
+            if (booted && start && !paused && !gameOver) {
+                handleDownPressed()
             }
+        } else {
+            handleDownReleased()
         }
         if (buttons.arrowLeft) {
-            keyPressed.current = false
-            dPad(-1, 0)
-            if (!gameOver && !paused) {
-                changePosition(-1)
+            if (booted && start && !paused && !gameOver) {
+                handleLeftPressed()
             }
+        } else {
+            handleLeftReleased()
         }
         if (buttons.arrowRight) {
-            keyPressed.current = false
-            dPad(1, 0)
-            if (!gameOver && !paused) {
-                changePosition(1)
+            if (booted && start && !paused && !gameOver) {
+                handleRightPressed()
             }
-        }
-        if (buttons.arrowUp) {
-            keyPressed.current = false
-            dPad(0, 1)
+        } else {
+            handleRightReleased()
         }
         if (buttons.start) {
-            if (gameOver) {
+            if (booted && !start || gameOver) {
                 startGame()
-            } else {
-                togglePause()
             }
         }
-    }, [buttons])
+    }, [buttons, start, gameOver, paused])
 
     // Lines completes handler
     useEffect(() => {
@@ -171,16 +181,17 @@ export default function Tetris () {
     }, [player.position])
 
     // Custom hook for ticks
-    useInterval(() => dropPosition(), tick, gameOver, paused)
+    useTickInterval(() => dropPosition(), tick, gameOver, paused, downPressed)
 
     const startGame = () => {
-        setStart(true)
         setGameOver(false)
         setPaused(false)
         setGrid(initialGrid)
         resetPlayer()
+        resetButtons()
         setLines(0)
         setScore(0)
+        setStart(true)
     }
 
     const togglePause = () => {
@@ -190,10 +201,6 @@ export default function Tetris () {
     const resetDropBonus = () => {
         setDownPressed(false)
         setDropBonus(0)
-    }
-
-    const resetKeyPressed = () => {
-        keyPressed.current = false
     }
 
     const incrementDropBonus = () => {
@@ -213,14 +220,13 @@ export default function Tetris () {
             }
             updatePlayerPosition({x: 0, y: 1, collides: false})
         } else {
+            resetButtons()
             if (player.position.y < 1) {
                 setGameOver(true)
             }
-            keyPressed.current = true
+            resetDropBonus()
             updatePlayerPosition({x: 0, y: 0, collides: true})
             setScore(score + dropBonus)
-            resetDropBonus()
-            setDownPressed(false)
         }
     }
 

@@ -1,7 +1,7 @@
 import { useGrid } from './useGrid'
-import { useInterval } from './useInterval'
+import { useTickInterval } from './useTickInterval'
 import { usePlayer } from './usePlayer'
 import { useLevel } from './useLevel'
 import { useTickTimer } from './useTickTimer'
 
-export { useGrid, useInterval, usePlayer, useLevel, useTickTimer }
+export { useGrid, useTickInterval, usePlayer, useLevel, useTickTimer }

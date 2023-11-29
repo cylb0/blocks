@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { randomTetromino } from "../constants/tetrominos"
 import { Player } from "../types"
 import { WIDTH } from "../constants/constants"
@@ -12,6 +12,9 @@ export const usePlayer = ():[Player, ({x, y, collides}:{x: number, y:number, col
         nextTetromino: randomTetromino(),
         collides: false
     })
+
+    useEffect(() => {
+    }, [player.position])
 
     const updatePlayerPosition = ({ x, y, collides }: {x: number, y: number, collides: boolean}) => {
         setPlayer(prevState => ({

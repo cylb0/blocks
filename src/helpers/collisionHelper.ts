@@ -14,6 +14,5 @@ export const isColliding = (player:Player, grid:GridContent, movement:{x: number
             }
         }
     }
-
     return false
 }
