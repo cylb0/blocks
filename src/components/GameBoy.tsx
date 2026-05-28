@@ -248,8 +248,6 @@ export default function GameBoy({ width }:Props) {
                 style={{ width: `${36 * unit}px`, height: `${60 * unit}px`, borderBottomRightRadius: `${10 * unit}px`}}
                 className="relative bg-gray-400 rounded-xl flex flex-col justify-between overflow-hidden"
             >
-                <div>{keyPressed.current.toString()}</div>
-
                 {/* ON/OFF */}
                 <div 
                     style={{ height: `${2.5 * unit}px` }}

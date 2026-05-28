@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  react-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: blocks:latest
+    container_name: blocks-prod
+    ports:
+      - "8082:80"
+    restart: unless-stopped
