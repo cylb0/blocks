@@ -60,7 +60,6 @@ export default function GameBoy({ width }:Props) {
     const fontSize = unit < 8 ? 6 : 8
     const smallFontSize = unit < 8 ? 4 : 6
 
-    const keyPressed = useRef<boolean>(false)
     const buttonsPressed = useRef<ButtonsPressed>(initialButtonsPressed)
 
     useEffect(() => {
