@@ -5,8 +5,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: blocks:latest
-    container_name: blocks-prod
-    ports:
-      - "8082:80"
+    container_name: blocks
     restart: unless-stopped
+    networks:
+      - reverse-proxy-nw
+
+networks:
+  reverse-proxy-nw:
+    external: true
